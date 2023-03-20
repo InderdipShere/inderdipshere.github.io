@@ -1,0 +1,257 @@
+<!--
+
+3. News and Publication
+   i.    Research publication
+   ii.   Presentation
+   iii.  Extra- curricular activites
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta name="viewport" content="with=device-width, initial-scale=1.5">
+    <title>Inderdip Shere</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="images/icon" href="images/icon.png">
+ <!--
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/fontawesome.min.css">    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+-->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      var orcid_id = "0000-0002-3344-4308";
+      var api_url = "https://pub.orcid.org/v3.0/" + orcid_id + "/works";
+      $.ajax({
+        url: api_url,
+        headers: {
+          'Accept': 'application/json'
+        },
+        success: function(data) {
+					var works = data["group"];
+					for (var i = 0; i < works.length; i++) {
+						var work = works[i]["work-summary"][0];
+						var title = work["title"]["title"]["value"];
+						var doi = "";
+						if (work["external-ids"] && work["external-ids"]["external-id"]) {
+							for (var j = 0; j < work["external-ids"]["external-id"].length; j++) {
+								if (work["external-ids"]["external-id"][j]["external-id-type"] == "doi") {
+									doi = work["external-ids"]["external-id"][j]["external-id-value"];
+									break;
+								}
+							}
+						}
+						var li = $("<li></li>");
+						if (doi) {
+							var a = $("<a></a>").attr("href", "https://doi.org/" + doi).text(title);
+							li.append(a);
+						} else {
+							li.text(title);
+						}
+						$("#publications").append(li);
+					}
+				}
+			});
+		});
+	</script>
+
+
+
+</head>
+
+
+<body>
+
+	<!-- 1. Home Page -->
+	<!--  removed lines
+				<i class="material-icons" onclick="hideMenu()">highlight_off</i>
+            <i class="material-icons" onclick="showMenu()" id="menu"> menu</i>                 
+
+<img src="images/Main_image.png">
+
+	-->
+	
+    <section class="header">		
+        <nav>
+			<a href="index.html"><img src="images/Main_image.png"></a>
+            <div class="nav-links" id="navLinks">
+                <ul>
+                    <li><a href="index.html"> Home  </a></li>
+                    <li><a href="about.html"> About </a></li>
+                    <li><a href="news.html"> News & Publications </a></li>
+                    <li><a href="contact.html"> Contact</a></li>
+                </ul>
+            </div>
+        </nav>        
+        <div class="title_name">
+           <p> Inderdip Shere <p>
+        </div>     
+      
+    </section>
+
+      <!------- News and Publications ------------->
+    <section class="news">
+
+
+
+		
+      <h1> Publications </h1>
+      <ul id="publications">
+	  </ul>
+	  
+
+      <h1> Research Presentations </h1>
+      <ul class="pre">
+	    <li><span class="conf">Martini 3.0 </span>
+			<span class="type"> Poster Presentation (online)</span>
+			<span class="title">"Development of Coarse-Grain Silica
+			Model to Study Nanoparticles Synthesis".</span> 
+			<span class="author"> *Shere I. and Malani A. </span>
+			<span class="loc">University of Groningen, Netherlands</span>
+			<span class="year">2021</span>
+		</li>
+
+	    <li><span class="conf">Basic Principles of DFT Calculations
+			 & Molecular Dynamics Simulations </span>
+			<span class="type"> Invited talk (online)</span>
+			<span class="title">Strategically Boosting Scales of
+			Simulation: Development of the Coarse-Grain Model."</span> 
+			<span class="author"> *Shere I. </span>
+			<span class="loc">MNIT, Jaipur</span>
+			<span class="year">2020</span>
+		</li>
+
+	    <li><span class="conf">MACB 2020 </span>
+			<span class="type"> Poster Presentation</span>
+			<span class="title">"Porosity Development in Silica
+			Particles during Self-assembly".</span> 
+			<span class="author"> *Shere I. and Malani A. </span>
+			<span class="loc">JNCASR, Banglore</span>
+			<span class="year">2020</span>
+		</li>
+
+	    <li><span class="conf">CheMference-2018 </span>
+			<span class="type"> Oral presentation</span>
+			<span class="title">"How to Synthesize a Desired Polymeric
+			Structure? A Molecular Simulation Perspective"</span> 
+			<span class="author"> *Shere I. and Malani A. </span>
+			<span class="loc">IITB, Mumbai</span>
+			<span class="year">2018</span>
+		</li>
+		
+
+	    <li><span class="conf">AIChE 2017 </span>
+			<span class="type"> Oral presentation</span>
+			<span class="title">"Development of Reaction Ensemble Monte
+			Carlo Algorithms to study the Kinetics of Polymerization".</span> 
+			<span class="author"> *Shere I. and Malani A. </span>
+			<span class="loc">Minnesota, USA</span>
+			<span class="year">2017</span>
+		</li>
+		
+
+	    <li><span class="conf">CCP5</span>
+			<span class="type"> Oral presentation</span>
+			<span class="title">"Understanding self-assembly of silica
+			precursor using Monte Carlo simulation"..</span> 
+			<span class="author"> Shere I. and *Malani A. </span>
+			<span class="loc">University of Strathclyde, UK</span>
+			<span class="year">2021</span>
+		</li>
+
+	    <li><span class="conf">RSS 2017 </span>
+			<span class="type"> Three Minutes Thesis Talk 3MTT</span>
+			<span class="title">Kinetics Studies of Silica Polymerization
+			using Reaction Ensemble Monte Carlo (REMC)"</span> 
+			<span class="author"> *Shere I. and Malani A. </span>
+			<span class="loc">IIT Bombay, Mumbai</span>
+			<span class="year">2017</span>
+		</li>
+
+	    <li><span class="conf">4th SMYIM-2016</span>
+			<span class="type"> Poster Presentation </span>
+			<span class="title">"Studying Polymerization of Silica
+			using Monte Carlo Simulation".</span> 
+			<span class="author"> *Shere I. and Malani A. </span>
+			<span class="loc">International Centre Goa</span>
+			<span class="year">2016</span>
+		</li>
+
+	    <li><span class="conf">CheMference-2016 </span>
+			<span class="type"> Poster Presentation </span>
+			<span class="title">"Study of Kinetics of Polymerization
+			using Reaction Ensemble Monte Carlo".</span> 
+			<span class="author"> *Shere I. and Malani A. </span>
+			<span class="loc">IITG, Gandhinagar</span>
+			<span class="year">2021</span>
+		</li>
+		
+	    <li><span class="conf">RSS 2016 </span>
+			<span class="type"> Oral Presentation</span>
+			<span class="title">"Study of Kinetics of Polymerization
+			using Reaction Ensemble Monte Carlo (REMC)</span> 
+			<span class="author"> *Shere I. and Malani A. </span>
+			<span class="loc"> IIT Bombay, Mumbai</span>
+			<span class="year">2016</span>
+		</li>
+		
+
+	    <li><span class="conf">RSS 2015 </span>
+			<span class="type"> Poster Presentation </span>
+			<span class="title">"Monte Carlo (MC) simulation of silica
+			polymerization of two, three and four functional alkoxides"</span> 
+			<span class="author"> *Shere I. and Malani A. </span>
+			<span class="loc">IIT Bombay, Mumbai</span>
+			<span class="year">2015</span>
+		</li>
+		
+
+	    <li><span class="conf">Soft Matter Meet 2015</span>
+			<span class="type"> Poster Presentation </span>
+			<span class="title">"Monte Carlo (MC) simulation of silica
+			polymerization of two, three and four functional alkoxides".</span> 
+			<span class="author"> *Shere I. and Malani A. </span>
+			<span class="loc">NCL, Pune</span>
+			<span class="year">2015</span>
+		</li>
+
+		
+	  </ul>	
+
+      </section>
+
+      
+    <footer>
+      <p>&copy; 2023 My Website. Free2Use By Anyone.</p>
+    </footer>
+<!--
+https://photos.app.goo.gl/
+
+      <!------- Publication---------->
+      <!------- Contact me-------------
+      </section>
+
+      <section class="footer">
+		  <h4>Contact Us</h4>
+		  <p> To contact me. </p>
+      </section>
+-->
+      <!----- JavaScript for Toggel menue ----->
+      
+
+      <script>
+		  var navLinks= document.getElementById("navLinks")
+		  function  showMenu(){
+				navLinks.style.right="0px";
+		  }
+		  function  hideMenu(){
+				navLinks.style.right="-200px";
+		  }
+
+
+      </script>
+  </body>
+</html>

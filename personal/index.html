@@ -1,0 +1,326 @@
+<!--
+This is my first hard coding website designed with initial template
+But then using html code
+Then  CSS to be used.
+Idea is to  have a static website and it need not be updated with the
+dynamic click
+
+Plan:
+
+1. Home page
+   My picture, Name
+   Welcome message
+   access for more about the research
+   
+2. About
+   My journery of the research so far
+   Institutes:
+   Projects:
+   
+3. News and Publication
+   i.    Research publication
+   ii.   Presentation
+   iii.  Extra- curricular activites
+   iv.   
+   
+4. ToolsKit
+   i.  Scienctific tools
+   ii. Dynamic calculations *(for the different coding)
+   
+5. Perspective
+   i.    Personal vision
+   ii.   Ideas worth sharing, Wished I knew earlier
+   iii.
+   
+n. Contact
+   i.   Current address
+   ii.  Professional email address
+   iii. Social medias
+   
+
+Current: 1, 2, 3, n
+
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta name="viewport" content="with=device-width, initial-scale=1.5">
+    <title>Inderdip Shere</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="images/icon" href="images/icon.png">
+ <!--
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/fontawesome.min.css">    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+-->
+
+      <!----- JavaScript for Toggel menue ----->
+      <script src="https://apis.google.com/js/api.js"></script>
+      
+</head>
+
+	<!-- 1. Home Page -->
+	<!--  removed lines
+				<i class="material-icons" onclick="hideMenu()">highlight_off</i>
+            <i class="material-icons" onclick="showMenu()" id="menu"> menu</i>                 
+
+          <a href="" class="more-btn"> More</a>
+<img src="images/Main_image.png">
+
+	-->
+	
+
+<body>
+	
+    <section class="header">		
+        <nav>
+			<a class="pro_pic" href="index.html"><img src="images/Main_image.png"></a>
+            <div class="nav-links" id="navLinks">
+                <ul>
+                    <li><a href="index.html"> Home  </a></li>
+                    <li><a href="about.html"> About </a></li>
+                    <li><a href="news.html"> News & Publications </a></li>
+                    <li><a href="contact.html"> Contact</a></li>
+                </ul>
+            </div>
+        </nav>        
+        <div class="title_name">
+           <p> Inderdip Shere <p>
+        </div>
+    </section>
+
+    
+    <div class="container">
+        <div  class="text-box">
+		    <h1> Namaste &nbsp; &nbsp;  Hello &nbsp;&nbsp;  Bonjour! </h1>
+		    <p> Currently a postdoctoral researcher at CNRS, France,
+		    I specialize in molecular simulation with a focus on
+		    understanding macroscopic behavior from a
+		    molecular perspective. I use Monte Carlo and
+		    Molecular Dynamics techniques to simulate multi-length
+		    and time molecular events in a system. Molecular events
+		    and interactions help me understand and predict the
+		    system's behavior at the macroscopic level.
+		    For example, we know water exists as ice by knowing how
+		    close molecules are packed together. </p>
+		    
+            <p>Previously, I used silica as a model system to
+            establish the role of functionality, concentration,
+            and solvent reactivity in governing silica morphology.
+            Algorithms were developed to accommodate reactions during
+            the simulations so that polymerization could be studied.
+            I also developed force fields for the coarse-grained silica
+            bead model, observing nano-particle self-assembly and
+            percolating structure due to the physical association
+            between beads.</p>
+
+            <p> Currently, I am working on a project focused on
+            CO<sub>2</sub>
+            to methanol conversion-"Artificial Photosynthesis",
+            which involves forcefield development and DFT calculations
+            of MOF polymer composites. My expertise in molecular
+            simulation techniques allows me to approach this project
+            with a unique perspective, and I am excited to contribute
+            to the field through my research.</p>
+        </div>
+        <button class="more" onclick="toggleResearch()">More</button>      
+    </div>
+    
+    <section class="research" style="display:none">
+		
+    <!------- Research ------------->
+    <h1> My Research </h1>
+    <div class="res-row">		  
+		<div class="res-img">
+			<a><img src="images/tog_1.png" class="res-img_a"></a>
+		</div>
+		<div class="res">
+			<h3>Reaction Algorithm</h3>
+			<p>Scientists have discovered some very interesting
+			materials, such as zeolite and aerogels, by combining
+			silica molecules. However, because we don't fully
+			understand how the silica system works, we have to do
+			trial-and-error and adjust different factors until we
+			get the desired result. To help us better understand how
+			silica molecules behave, we used the Monte Carlo
+			technique to simulate their behavior. Our results
+			matched what we observed in real-life experiments
+			very closely.</p>
+
+			 <p> By studying these simulations, we were able to
+			 identify four different stages of the silica
+			 polymerization process based on the molecular reactions
+			 and shape of the silica aggregate.</p>
+		</div>		  
+    </div> 
+    
+    <div class="res-col">
+		<div class="res-img">
+			<a><img src="images/tog_2.png" class="res-img_b"></a>
+		</div>
+		<div class="res">
+			<h3>Porosity Development</h3>
+			<p>The process of silica polymerization is commonly used
+			to create porous catalysts, but the way these pores are
+			formed is not well understood in the absence of
+			structure-directing agents or templates.</p>
+			
+			<p>To shed light on this process, we employed molecular
+			simulation to investigate how pores develop. Our
+			algorithm allowed us to estimate the porosity of irregular,
+			non-periodic particles, and we observed that there are two
+			different pathways for pore formation in the silica system.
+			The concentration of the precursor and the type of solvent
+			used were found to be critical factors in controlling these
+			pathways.</p>
+
+			 <p> By creating a concentration-time porosity phase
+			 diagram, we can now predict the porosity of a material
+			 based on the concentration and reaction time, enabling us
+			 to develop materials with the desired porosity.</p>			  
+
+		</div>
+    </div>
+    
+    <div class="res-row">
+		<div class="res-img">
+			<a><img src="images/tog_3.png" class="res-img_a"></a>
+		</div>
+		<div class="res">
+			<h3>Reaction Mechanisum</h3>
+			<p>When we arrange rings in a certain way, we can create
+			really cool materials with special properties. But the way
+			the rings come together can be hard to predict. To
+			understand this process better, we used our algorithm to
+			simulate how the rings behave when they're forming and
+			arranged. We figured out how likely each ring is to stay
+			together before breaking apart and rearranging. This helped
+			us make a model explaining the different steps in creating
+			the final ring arrangement.</p>
+
+			<p> Knowing how to control the concentration and time of
+			the assembly process helps us design materials with
+			specific ring arrangements, which is incredible!</p>
+		</div>
+    </div>
+    <div class="res-col">
+		<div class="res-img">
+			<a><img src="images/tog_4.png" class="res-img_b"></a>
+		</div>
+		<div class="res">
+			<h3>Coarse-Grained Model</h3>
+			<p>Silica nanoparticles are commonly employed for
+			delivering drugs, but simulating their formation is a
+			tedious process due to the large system size. To
+			investigate how silica species interact at a molecular
+			level, we created a coarse model that treats the whole
+			silica as a single unit. We fine-tuned the interaction
+			potential of the coarse particles to align with the actual
+			silica species through an iterative process. With this
+			forcefield, we analyzed the formation of sizable
+			nanoparticles and percolating structures.</p>
+			
+
+			 <p> The coarse-grain model enables us to simulate a
+			 vast system within a reasonable computational
+			 timeframe.</p>
+		</div>
+    </div>
+
+    
+    <div class="res-row">
+		<div class="res-img">
+			<a><img src="images/tog_5.png" class="res-img_a"></a>
+		</div>
+		<div class="res">
+			<h3>Artificial Photosynthesis</h3>
+			<p>Artificial photosynthesis is an emerging technology
+			that seeks to mimic the natural process of photosynthesis,
+			using renewable energy sources to convert carbon dioxide
+			into valuable chemicals. As part of this field, my project
+			involves developing an advanced material that can capture
+			CO<sub>2</sub> and convert it into methanol under solar
+			radiation. To achieve this, we need to gain a deep
+			understanding of MOF-polymer (PHI) composite. </p>
+
+			<p>We developed an atomistically detailed model for the
+			composite using DFT calculation and MD simulation with our
+			developed forcefields. We explore the stability of the
+			composite, molecular interaction of gas, interfacial
+			behavior, charge transfer properties, and interfacial
+			porosity. </p>
+
+			<p> This project has the potential to make significant
+			contributions to the field of renewable energy and carbon
+			capture, and our work in developing an advanced material
+			could have important implications for mitigating the
+			effects of climate change.</p>
+		</div>
+    </div>
+      
+    <div class="res-col">
+		<div class="res-img">
+			<a><img src="images/tog_6.png" class="res-img_b"></a>
+		</div>
+		<div class="res">
+			<h3>Machine Learning Potentials </h3>
+			<p>This study employs interatomic potentials in conducting
+			large-scale atomistic computer simulations of materials to
+			enable the prediction of energy and Newtonian forces. The
+			interatomic potential utilized is developed using
+			machine-learning techniques and a reference database
+			generated through quantum-mechanical calculations.
+			Specifically, this machine-learning potential is derived
+			from high-dimensional mathematical regression to interpolate
+			between reference energies while also incorporating a
+			physical base to enhance transferability.</p>
+		</div>
+    </div>
+
+	</section class="research"> 
+
+	
+	<!-- First plaque -->
+
+    <footer>
+      <p>&copy; 2023 My Website. Free2Use By Anyone.</p>
+    </footer>
+
+    
+	<script>var originalButtonPosition;
+
+window.addEventListener("load", function() {
+  var moreButton = document.querySelector(".more");
+  originalButtonPosition = moreButton.getBoundingClientRect().top + window.scrollY;
+});
+
+function toggleResearch() {
+  var researchSection = document.querySelector(".research");
+  var moreButton = document.querySelector(".more");
+  if (researchSection.style.display === "none") {
+    researchSection.style.display = "block";
+    moreButton.textContent = "Less";
+    moreButton.classList.remove("small");
+
+    // Position the button at the original position
+    moreButton.style.position = "fixed";
+    moreButton.style.bottom = "30px";
+    moreButton.style.left = moreButton.getBoundingClientRect().left + "px";
+    moreButton.style.top = "auto";
+  } else {
+    researchSection.style.display = "none";
+    moreButton.textContent = "More";
+    moreButton.classList.add("small");
+
+    // Reset the position of the button to static
+    moreButton.style.position = "static";
+    moreButton.style.top = originalButtonPosition + "px";
+  }
+}
+
+    </script>
+  </body>
+</html>

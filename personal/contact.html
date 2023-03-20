@@ -1,0 +1,119 @@
+<!--
+
+3. News and Publication
+   i.    Research publication
+   ii.   Presentation
+   iii.  Extra- curricular activites
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta name="viewport" content="with=device-width, initial-scale=1.5">
+    <title>Inderdip Shere</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="images/icon" href="images/icon.png">
+ <!--
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/fontawesome.min.css">    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+-->
+</head>
+
+
+<body>
+	<!-- 1. Home Page -->
+	<!--  removed lines
+				<i class="material-icons" onclick="hideMenu()">highlight_off</i>
+            <i class="material-icons" onclick="showMenu()" id="menu"> menu</i>                 
+
+<img src="images/Main_image.png">
+
+	-->
+	
+    <section class="header">		
+        <nav>
+			<a href="index.html"><img src="images/Main_image.png"></a>
+            <div class="nav-links" id="navLinks">
+                <ul>
+                    <li><a href="index.html"> Home  </a></li>
+                    <li><a href="about.html"> About </a></li>
+                    <li><a href="news.html"> News & Publications </a></li>
+                    <li><a href="contact.html"> Contact</a></li>
+                </ul>
+            </div>
+        </nav>        
+        <div class="title_name">
+           <p> Inderdip Shere <p>
+        </div>     
+      
+    </section>
+
+      <!------- Conctact ------------->
+    <section class="contact">    
+      <h1> Get in Touch ! </h1>
+      <div class="you-contact">
+		<img class="vcard" src="images/vcard.png">
+      <div class="contact-form" >
+
+		<!-- <?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+		
+		-->
+        <form method="post" action="https://formspree.io/inder.solar@gmail.com">       
+        
+        <h2> Contact Form </h2>
+		  <input type="text" name="name" placeholder="Your Name">
+		  <input type="email" name="email" placeholder="Your Email ID">
+		  <textarea row ="5" placeholder="Your Comment" required> </textarea>
+		  		  
+		  <button type="submit" class="btn"> Submit </button>			  
+        </form>
+        </div>
+
+       </div>   
+    </section>
+
+    
+    <footer>
+      <p>&copy; 2023 My Website. Free2Use By Anyone.</p>
+    </footer>
+
+
+  <?php
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $name = $_POST['name'];
+  $email = $_POST['email'];
+  $comment = $_POST['comment'];
+
+  $to = "inder.solar@gmail.com"; // replace with your email address
+  $subject = "New Contact Form Submission";
+  $message = "Name: $name\nEmail: $email\nComment: $comment";
+  $headers = "From: $email\r\n" .
+             "Reply-To: $email\r\n" .
+             "X-Mailer: PHP/" . phpversion();
+
+  if (mail($to, $subject, $message, $headers)) {
+    echo "Thank you for your message!";
+  } else {
+    echo "An error occurred. Please try again later.";
+  }
+}
+?>
+<!--       
+      <!------- Publication---------->
+      <!------- Contact me-------------
+      </section>
+
+      <section class="footer">
+		  <h4>Contact Us</h4>
+		  <p> To contact me. </p>
+      </section>
+-->
+      <!----- JavaScript for Toggel menue ----->
+      
+  
+      
+  </body>
+</html>
