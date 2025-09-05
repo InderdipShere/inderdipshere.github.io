@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EthaVriti - Turning Food Waste into Green Solvent</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #7cb342;
+            --accent-color: #f9a825;
+            --light-color: #f1f8e9;
+            --dark-color: #1b5e20;
+            --text-color: #212121;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .founder {
+            font-style: italic;
+        }
+        
+        section {
+            padding: 3rem 0;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 2rem;
+        }
+        
+        h3 {
+            color: var(--dark-color);
+            margin: 1rem 0;
+        }
+        
+        .problem-solution {
+            background-color: var(--light-color);
+        }
+        
+        .content-box {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .flex-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+        }
+        
+        .flex-item {
+            flex: 1 1 300px;
+        }
+        
+        .process {
+            text-align: center;
+        }
+        
+        .process-steps {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+        
+        .step {
+            background: var(--secondary-color);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0.5rem;
+            text-align: center;
+        }
+        
+        .arrow {
+            display: flex;
+            align-items: center;
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+        
+        .benefits {
+            background-color: var(--light-color);
+        }
+        
+        .benefit-list {
+            list-style-type: none;
+        }
+        
+        .benefit-list li {
+            padding: 0.5rem 0;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .benefit-list li:before {
+            content: "✓";
+            color: var(--primary-color);
+            position: absolute;
+            left: 0;
+        }
+        
+        .market-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        .market-table th, .market-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .market-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .market-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .needs {
+            background-color: var(--light-color);
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        .meaning {
+            margin: 1rem 0;
+            font-style: italic;
+        }
+        
+        .contact {
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .process-steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+                margin: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">EthaVriti</div>
+            <div class="tagline">Turning Food Waste into Green Solvent</div>
+            <div class="founder">Dr. Inderdip SHERE</div>
+        </div>
+    </header>
+    
+    <section class="problem-solution">
+        <div class="container">
+            <h2>Background & Problem</h2>
+            <div class="flex-container">
+                <div class="flex-item content-box">
+                    <h3>The Challenge</h3>
+                    <p>Research institutes generate significant food waste daily, with facilities like CNRS-ICGM in Montpellier producing 10-15 kg of waste every day. At the same time, these institutes have a high and growing demand for ethanol (98° & 70°) for research purposes, currently relying entirely on external sourcing.</p>
+                </div>
+                <div class="flex-item content-box">
+                    <h3>Our Solution</h3>
+                    <p>EthaVriti transforms food waste from research institute canteens into high-quality ethanol through an innovative fermentation process. This creates a sustainable, circular economy solution that addresses both waste management and solvent supply challenges.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="process">
+        <div class="container">
+            <h2>Our Process</h2>
+            <div class="content-box">
+                <div class="process-steps">
+                    <div class="step">Food Waste Collection</div>
+                    <div class="arrow">→</div>
+                    <div class="step">Fermentation Process</div>
+                    <div class="arrow">→</div>
+                    <div class="step">Ethanol Production</div>
+                    <div class="arrow">→</div>
+                    <div class="step">Distribution On-site</div>
+                </div>
+                
+                <p>The scientific process converts food waste into ethanol through enzymatic hydrolysis and yeast fermentation:</p>
+                <p>\[(C_6H_{10}O_5)_n + n(H_2O) \xrightarrow{enzyme} C_6H_{12}O_6\]</p>
+                <p>\[C_6H_{12}O_6 \xrightarrow{yeast} 2C_2H_5OH + 2CO_2\]</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="benefits">
+        <div class="container">
+            <h2>Why Choose EthaVriti?</h2>
+            <div class="content-box">
+                <ul class="benefit-list">
+                    <li><strong>Waste to Product:</strong> Transform food waste into valuable research solvent</li>
+                    <li><strong>On-site Production:</strong> Zero transportation costs and reduced carbon footprint</li>
+                    <li><strong>Dual-grade Flexibility:</strong> Production of both 98° and 70° ethanol as needed</li>
+                    <li><strong>Sustainable Solution:</strong> Addresses both waste management and supply chain challenges</li>
+                    <li><strong>Cost Effective:</strong> Significant savings compared to traditional sourcing</li>
+                </ul>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <h3>Proof of Concept @ CNRS</h3>
+                    <p>100L/week production • 50L of 98° @ €10.0/L • 50L of 70° @ €6.5/L</p>
+                    <p><strong>Total: €850/week revenue potential</strong></p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section>
+        <div class="container">
+            <h2>Market Potential</h2>
+            <div class="content-box">
+                <h3>Projected Growth</h3>
+                <p>With successful implementation at CNRS-ICGM Montpellier, we project expansion to:</p>
+                <ul>
+                    <li>6 institutes in Montpellier: 5,000 L/week (€42,500/week)</li>
+                    <li>50+ institutes across France: 300,000 L/week (€2,550,000/week)</li>
+                </ul>
+                
+                <h3>Additional Market Sectors (Montpellier Monthly Estimate)</h3>
+                <table class="market-table">
+                    <tr>
+                        <th>Industry Sector</th>
+                        <th>Equivalent in 100-liter Units</th>
+                        <th>Market Value @ €850/100L</th>
+                    </tr>
+                    <tr>
+                        <td>Pharmaceuticals & Biotech</td>
+                        <td>50-100</td>
+                        <td>€42,500-€85,000</td>
+                    </tr>
+                    <tr>
+                        <td>Cosmetics & Personal Care</td>
+                        <td>30-70</td>
+                        <td>€25,500-€59,500</td>
+                    </tr>
+                    <tr>
+                        <td>Food & Beverage Processing</td>
+                        <td>20-50</td>
+                        <td>€17,000-€42,500</td>
+                    </tr>
+                    <tr>
+                        <td>Agriculture & Viticulture</td>
+                        <td>10-30</td>
+                        <td>€8,500-€25,500</td>
+                    </tr>
+                    <tr>
+                        <th>Total</th>
+                        <th>110-250</th>
+                        <th>€93,500-€212,500</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </section>
+    
+    <section class="needs">
+        <div class="container">
+            <h2>What We Need</h2>
+            <div class="content-box">
+                <div class="flex-container">
+                    <div class="flex-item">
+                        <h3>Support Requirements</h3>
+                        <ul>
+                            <li>Space within research premises</li>
+                            <li>Access to food waste sources</li>
+                            <li>Institutional support for pilot program</li>
+                            <li>Minimal early-stage funding for setup</li>
+                        </ul>
+                    </div>
+                    <div class="flex-item">
+                        <h3>Partnership Benefits</h3>
+                        <ul>
+                            <li>Reduced waste management costs</li>
+                            <li>Reliable, on-site ethanol supply</li>
+                            <li>Demonstration of sustainability leadership</li>
+                            <li>Potential revenue sharing opportunities</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="logo">EthaVriti</div>
+            <div class="meaning">
+                <p>Étha = Ethanol • Vriti = (Sanskrit) Mindset</p>
+                <p>Company with a green mindset of ethanol production</p>
+            </div>
+            <div class="tagline">"Let's build a greener future together"</div>
+            <div class="contact">
+                <p>Dr. Inderdip SHERE, Founder</p>
+                <p>https://inderdipshere.github.io/ethavriti</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
