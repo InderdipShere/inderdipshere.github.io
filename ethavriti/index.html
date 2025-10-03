@@ -1,829 +1,832 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ÉthaVriti - Turning Food Waste into Green Solvent</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <style>
-        /* Reset and Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ÉthaVriti - Turning Food Waste into Green Solvent</title>
+<link rel="icon" href="image/logo.png" type="image/png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+/* Reset and Base Styles */
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        :root {
-            --primary: #2e7d32;
-            --primary-dark: #1b5e20;
-            --primary-light: #4caf50;
-            --secondary: #7cb342;
-            --accent: #f9a825;
-            --light: #f1f8e9;
-            --dark: #212121;
-            --gray: #f5f5f5;
-            --text: #333333;
-        }
+:root {
+--primary: #2e7d32;
+--primary-dark: #1b5e20;
+--primary-light: #4caf50;
+--secondary: #7cb342;
+--accent: #f9a825;
+--light: #f1f8e9;
+--dark: #212121;
+--gray: #f5f5f5;
+--text: #333333;
+}
 
-        body {
-            background-color: #f8f9fa;
-            color: var(--text);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+body {
+background-color: #f8f9fa;
+color: var(--text);
+line-height: 1.6;
+overflow-x: hidden;
+}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+.container {
+max-width: 1200px;
+margin: 0 auto;
+padding: 0 20px;
+}
 
-        /* Navigation */
-        nav {
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
+/* Navigation */
+nav {
+background-color: white;
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+position: fixed;
+top: 0;
+width: 100%;
+z-index: 1000;
+transition: all 0.3s ease;
+}
 
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 20px;
-        }
+.nav-container {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 1rem 20px;
+}
 
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
+.nav-logo {
+display: flex;
+align-items: center;
+font-size: 1.5rem;
+font-weight: bold;
+color: var(--primary);
+}
 
-        .nav-logo img {
-            height: 40px;
-            margin-right: 10px;
-        }
+.nav-logo img {
+height: 60px;
+margin-right: 10px;
+}
 
-        .nav-links {
-            display: flex;
-            list-style: none;
-        }
+.nav-links {
+display: flex;
+list-style: none;
+}
 
-        .nav-links li {
-            margin-left: 2rem;
-        }
+.nav-links li {
+margin-left: 2rem;
+}
 
-        .nav-links a {
-            text-decoration: none;
-            color: var(--dark);
-            font-weight: 500;
-            transition: color 0.3s;
-            position: relative;
-        }
+.nav-links a {
+text-decoration: none;
+color: var(--dark);
+font-weight: 500;
+transition: color 0.3s;
+position: relative;
+}
 
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--primary);
-        }
+.nav-links a:hover, .nav-links a.active {
+color: var(--primary);
+}
 
-        .nav-links a.active::after {
-            content: "";
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: var(--primary);
-        }
+.nav-links a.active::after {
+content: "";
+position: absolute;
+bottom: -5px;
+left: 0;
+width: 100%;
+height: 2px;
+background-color: var(--primary);
+}
 
-        .menu-toggle {
-            display: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
+.menu-toggle {
+display: none;
+font-size: 1.5rem;
+cursor: pointer;
+}
 
-        /* Fullpage Sections */
-        .fullpage-section {
-            min-height: 100vh;
-            padding: 80px 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+/* Fullpage Sections */
+.fullpage-section {
+min-height: 100vh;
+padding: 80px 0;
+display: flex;
+flex-direction: column;
+justify-content: center;
+}
 
-        /* Home Section */
-        #home {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+/* Home Section */
+#home {
+background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+color: white;
+text-align: center;
+position: relative;
+overflow: hidden;
+}
 
-        #home::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.1"><circle cx="50" cy="50" r="40" fill="white"/></svg>');
-            opacity: 0.1;
-        }
+#home::before {
+content: "";
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.1"><circle cx="50" cy="50" r="40" fill="white"/></svg>');
+opacity: 0.1;
+}
 
-        .hero-content h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
+.hero-content h1 {
+font-size: 4rem;
+margin-bottom: 1rem;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
 
-        .hero-content h2 {
-            font-size: 1.8rem;
-            margin-bottom: 2rem;
-            font-weight: 300;
-        }
+.hero-content h2 {
+font-size: 1.8rem;
+margin-bottom: 2rem;
+font-weight: 300;
+}
 
-        .founder-profile {
-            margin: 2rem 0;
-        }
+.founder-profile {
+margin: 2rem 0;
+}
 
-        .profile-img {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 5px solid white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
+.profile-img {
+width: 200px;
+height: 200px;
+border-radius: 50%;
+object-fit: cover;
+border: 5px solid white;
+box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
 
-        .scroll-button {
-            display: inline-block;
-            margin-top: 2rem;
-            color: white;
-            font-size: 2rem;
-            animation: bounce 2s infinite;
-        }
+.scroll-button {
+display: inline-block;
+margin-top: 2rem;
+color: white;
+font-size: 2rem;
+animation: bounce 2s infinite;
+}
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-10px);
-            }
-            60% {
-                transform: translateY(-5px);
-            }
-        }
+@keyframes bounce {
+0%, 20%, 50%, 80%, 100% {
+transform: translateY(0);
+}
+40% {
+transform: translateY(-10px);
+}
+60% {
+transform: translateY(-5px);
+}
+}
 
-        /* Section Titles */
-        .section-title {
-            text-align: center;
-            margin-bottom: 3rem;
-            color: var(--primary-dark);
-            font-size: 2.5rem;
-            position: relative;
-        }
+/* Section Titles */
+.section-title {
+text-align: center;
+margin-bottom: 3rem;
+color: var(--primary-dark);
+font-size: 2.5rem;
+position: relative;
+}
 
-        .section-title::after {
-            content: "";
-            display: block;
-            width: 80px;
-            height: 4px;
-            background-color: var(--accent);
-            margin: 0.5rem auto;
-        }
+.section-title::after {
+content: "";
+display: block;
+width: 80px;
+height: 4px;
+background-color: var(--accent);
+margin: 0.5rem auto;
+}
 
-        /* Cards */
-        .flex-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-            justify-content: center;
-        }
+/* Cards */
+.flex-container {
+display: flex;
+flex-wrap: wrap;
+gap: 2rem;
+justify-content: center;
+}
 
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            flex: 1 1 300px;
-            transition: transform 0.3s;
-        }
+.card {
+background: white;
+border-radius: 10px;
+padding: 2rem;
+box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+flex: 1 1 300px;
+transition: transform 0.3s;
+}
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
+.card:hover {
+transform: translateY(-5px);
+}
 
-        .card h3 {
-            color: var(--primary-dark);
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
+.card h3 {
+color: var(--primary-dark);
+margin-bottom: 1rem;
+font-size: 1.5rem;
+}
 
-        /* Process Section */
-        .process-steps {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin: 3rem 0;
-            position: relative;
-        }
+/* Process Section */
+.process-steps {
+display: flex;
+justify-content: space-between;
+flex-wrap: wrap;
+margin: 3rem 0;
+position: relative;
+}
 
-        .process-steps::before {
-            content: "";
-            position: absolute;
-            top: 60px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background-color: var(--primary-light);
-            z-index: 1;
-        }
+.process-steps::before {
+content: "";
+position: absolute;
+top: 60px;
+left: 0;
+right: 0;
+height: 3px;
+background-color: var(--primary-light);
+z-index: 1;
+}
 
-        .step {
-            text-align: center;
-            flex: 1;
-            position: relative;
-            z-index: 2;
-            min-width: 200px;
-            margin-bottom: 2rem;
-        }
+.step {
+text-align: center;
+flex: 1;
+position: relative;
+z-index: 2;
+min-width: 200px;
+margin-bottom: 2rem;
+}
 
-        .step-icon {
-            width: 120px;
-            height: 120px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            font-size: 2.5rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
+.step-icon {
+width: 120px;
+height: 120px;
+background: var(--primary);
+color: white;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+margin: 0 auto 1rem;
+font-size: 2.5rem;
+box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
 
-        .step-title {
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            color: var(--primary-dark);
-        }
+.step-title {
+font-weight: bold;
+margin-bottom: 0.5rem;
+color: var(--primary-dark);
+}
 
-        .chemical-equation {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin-top: 2rem;
-            text-align: center;
-        }
+.chemical-equation {
+background: white;
+padding: 2rem;
+border-radius: 10px;
+box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+margin-top: 2rem;
+text-align: center;
+}
 
-        .equation {
-            font-style: italic;
-            margin: 1rem 0;
-            overflow-x: auto;
-        }
+.equation {
+font-style: italic;
+margin: 1rem 0;
+overflow-x: auto;
+}
 
-        /* Benefits Section */
-        .benefit-list {
-            list-style: none;
-        }
+/* Benefits Section */
+.benefit-list {
+list-style: none;
+}
 
-        .benefit-list li {
-            padding: 1rem 0;
-            position: relative;
-            padding-left: 3rem;
-            margin-bottom: 0.5rem;
-        }
+.benefit-list li {
+padding: 1rem 0;
+position: relative;
+padding-left: 3rem;
+margin-bottom: 0.5rem;
+}
 
-        .benefit-list li::before {
-            content: "✓";
-            color: var(--primary);
-            position: absolute;
-            left: 1rem;
-            top: 1rem;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
+.benefit-list li::before {
+content: "✓";
+color: var(--primary);
+position: absolute;
+left: 1rem;
+top: 1rem;
+font-size: 1.5rem;
+font-weight: bold;
+}
 
-        .proof-box {
-            background: var(--primary-dark);
-            color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            margin-top: 2rem;
-            text-align: center;
-        }
+.proof-box {
+background: var(--primary-dark);
+color: white;
+padding: 2rem;
+border-radius: 10px;
+margin-top: 2rem;
+text-align: center;
+}
 
-        /* Market Section */
-        .market-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 2rem 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
+/* Market Section */
+.market-table {
+width: 100%;
+border-collapse: collapse;
+margin: 2rem 0;
+box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+border-radius: 10px;
+overflow: hidden;
+}
 
-        .market-table th, .market-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+.market-table th, .market-table td {
+padding: 1rem;
+text-align: left;
+border-bottom: 1px solid #ddd;
+}
 
-        .market-table th {
-            background-color: var(--primary);
-            color: white;
-        }
+.market-table th {
+background-color: var(--primary);
+color: white;
+}
 
-        .market-table tr:nth-child(even) {
-            background-color: var(--gray);
-        }
+.market-table tr:nth-child(even) {
+background-color: var(--gray);
+}
 
-        .market-table tr:last-child td {
-            border-bottom: none;
-        }
+.market-table tr:last-child td {
+border-bottom: none;
+}
 
-        /* Contact Section */
-        .contact-content {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-        }
+/* Contact Section */
+.contact-content {
+display: flex;
+flex-wrap: wrap;
+gap: 2rem;
+}
 
-        .contact-info, .contact-form {
-            flex: 1 1 300px;
-        }
+.contact-info, .contact-form {
+flex: 1 1 300px;
+}
 
-        .contact-info {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
+.contact-info {
+background: white;
+padding: 2rem;
+border-radius: 10px;
+box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
 
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
+.footer-logo {
+display: flex;
+align-items: center;
+font-size: 1.8rem;
+font-weight: bold;
+color: var(--primary);
+margin-bottom: 1rem;
+}
 
-        .footer-logo img {
-            height: 50px;
-            margin-right: 10px;
-        }
+.footer-logo img {
+height: 70px;
+margin-right: 10px;
+}
 
-        .meaning {
-            margin: 1rem 0;
-            font-style: italic;
-            opacity: 0.9;
-        }
+.meaning {
+margin: 1rem 0;
+font-style: italic;
+opacity: 0.9;
+}
 
-        .contact-details {
-            margin: 1.5rem 0;
-        }
+.contact-details {
+margin: 1.5rem 0;
+}
 
-        .social-links {
-            margin-top: 1rem;
-        }
+.social-links {
+margin-top: 1rem;
+}
 
-        .social-links a {
-            color: var(--primary);
-            font-size: 1.5rem;
-            margin: 0 0.5rem;
-            transition: opacity 0.3s;
-        }
+.social-links a {
+color: var(--primary);
+font-size: 1.5rem;
+margin: 0 0.5rem;
+transition: opacity 0.3s;
+}
 
-        .social-links a:hover {
-            opacity: 0.8;
-        }
+.social-links a:hover {
+opacity: 0.8;
+}
 
-        .contact-form {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
+.contact-form {
+background: white;
+padding: 2rem;
+border-radius: 10px;
+box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
 
-        .contact-form h3 {
-            margin-bottom: 1.5rem;
-            color: var(--primary-dark);
-        }
+.contact-form h3 {
+margin-bottom: 1.5rem;
+color: var(--primary-dark);
+}
 
-        .contact-form input, .contact-form textarea {
-            width: 100%;
-            padding: 0.8rem;
-            margin-bottom: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
+.contact-form input, .contact-form textarea {
+width: 100%;
+padding: 0.8rem;
+margin-bottom: 1rem;
+border: 1px solid #ddd;
+border-radius: 5px;
+font-size: 1rem;
+}
 
-        .contact-form button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background 0.3s;
-        }
+.contact-form button {
+background: var(--primary);
+color: white;
+border: none;
+padding: 1rem 2rem;
+border-radius: 5px;
+cursor: pointer;
+font-size: 1rem;
+transition: background 0.3s;
+}
 
-        .contact-form button:hover {
-            background: var(--primary-dark);
-        }
+.contact-form button:hover {
+background: var(--primary-dark);
+}
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .menu-toggle {
-                display: block;
-            }
-            
-            .nav-links {
-                position: fixed;
-                top: 70px;
-                left: -100%;
-                width: 100%;
-                height: calc(100vh - 70px);
-                background: white;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                transition: left 0.3s ease;
-            }
-            
-            .nav-links.active {
-                left: 0;
-            }
-            
-            .nav-links li {
-                margin: 1.5rem 0;
-            }
-            
-            .hero-content h1 {
-                font-size: 2.5rem;
-            }
-            
-            .hero-content h2 {
-                font-size: 1.3rem;
-            }
-            
-            .process-steps::before {
-                display: none;
-            }
-            
-            .step {
-                flex: 0 0 100%;
-                margin-bottom: 2rem;
-            }
-            
-            .section-title {
-                font-size: 2rem;
-            }
-            
-            .profile-img {
-                width: 150px;
-                height: 150px;
-            }
-            
-            .nav-container {
-                padding: 1rem 20px;
-            }
-        }
-    </style>
+/* Responsive Design */
+@media (max-width: 768px) {
+.menu-toggle {
+display: block;
+}
+
+.nav-links {
+position: fixed;
+top: 70px;
+left: -100%;
+width: 100%;
+height: calc(100vh - 70px);
+background: white;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+transition: left 0.3s ease;
+}
+
+.nav-links.active {
+left: 0;
+}
+
+.nav-links li {
+margin: 1.5rem 0;
+}
+
+.hero-content h1 {
+font-size: 2.5rem;
+}
+
+.hero-content h2 {
+font-size: 1.3rem;
+}
+
+.process-steps::before {
+display: none;
+}
+
+.step {
+flex: 0 0 100%;
+margin-bottom: 2rem;
+}
+
+.section-title {
+font-size: 2rem;
+}
+
+.profile-img {
+width: 150px;
+height: 150px;
+}
+
+.nav-container {
+padding: 1rem 20px;
+}
+}
+</style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav id="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <img src="image/logo.png" alt="ÉthaVriti Logo">
-                <span>ÉthaVriti</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#home" class="active">Home</a></li>
-                <li><a href="#problem">Problem</a></li>
-                <li><a href="#process">Process</a></li>
-                <li><a href="#benefits">Benefits</a></li>
-                <li><a href="#market">Market</a></li>
-                <li><a href="#needs">Needs</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-            <div class="menu-toggle">
-                <i class="fas fa-bars"></i>
-            </div>
-        </div>
-    </nav>
+<!-- Navigation -->
+<nav id="navbar">
+<div class="nav-container">
+<div class="nav-logo">
+<img src="image/logo.png" alt="ÉthaVriti Logo">
+<span>ÉthaVriti</span>
+</div>
+<ul class="nav-links">
+<li><a href="#home" class="active">Home</a></li>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#process">Process</a></li>
+<li><a href="#benefits">Benefits</a></li>
+<li><a href="#market">Market</a></li>
+<li><a href="#needs">Needs</a></li>
+<li><a href="#contact">Contact</a></li>
+</ul>
+<div class="menu-toggle">
+<i class="fas fa-bars"></i>
+</div>
+</div>
+</nav>
 
-    <!-- Home Section -->
-    <section id="home" class="fullpage-section">
-        <div class="container">
-            <div class="hero-content">
-                <h1>ÉthaVriti</h1>
-                <h2>Turning Food Waste into Green Solvent</h2>
-                <div class="founder-profile">
-                    <img src="image/me.png" alt="Dr. Inderdip Shere" class="profile-img">
-                    <p>Dr. <strong>Inderdip SHERE</strong></p>
-                </div>
-                <a href="#problem" class="scroll-button">
-                    <i class="fas fa-chevron-down"></i>
-                </a>
-            </div>
-        </div>
-    </section>
+<!-- Home Section -->
+<section id="home" class="fullpage-section">
+<div class="container">
+<div class="hero-content">
+<h1>ÉthaVriti</h1>
+<h2>Turning Food Waste into Green Solvent</h2>
+<div class="founder-profile">
+<img src="image/me.png" alt="Dr. Inderdip Shere" class="profile-img">
+<p>Dr. <strong>Inderdip SHERE</strong></p>
+</div>
+<a href="#problem" class="scroll-button">
+<i class="fas fa-chevron-down"></i>
+</a>
+</div>
+</div>
+</section>
 
-    <!-- Problem Solution Section -->
-    <section id="problem" class="fullpage-section">
-        <div class="container">
-            <h2 class="section-title">Background & Problem</h2>
-            <div class="flex-container">
-                <div class="card">
-                    <h3>The Challenge</h3>
-                    <p>Research institutes generate significant food waste daily, with facilities like CNRS @ Montpellier producing 10-15 kg of waste every day. At the same time, these institutes have a high and growing demand for ethanol (98° & 70°) for research purposes, currently relying entirely on external sourcing.</p>
-                </div>
-                <div class="card">
-                    <h3>Our Solution</h3>
-                    <p>ÉthaVriti transforms food waste from research institute canteens into ethanol through fermentation process. This creates a sustainable, circular economy solution that addresses both waste management and solvent supply challenges.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- Problem Solution Section -->
+<section id="problem" class="fullpage-section">
+<div class="container">
+<h2 class="section-title">Background & Problem</h2>
+<div class="flex-container">
+<div class="card">
+<h3>The Challenge</h3>
+<p>Research institutes and university canteens across France (e.g., CNRS, INSERM, INRAE, CEA, Institut Pasteur, Université de Montpellier) generate significant food waste daily — in some canteens this can be on the order of 10–15 kg per day. At the same time, these institutes have a high and growing demand for ethanol (98° &amp; 70°) for research purposes, currently relying entirely on external sourcing.</p>
+</div>
+<div class="card">
+<h3>Our Solution</h3>
+<p>ÉthaVriti transforms food waste from research institute canteens into ethanol through fermentation process. This creates a sustainable, circular economy solution that addresses both waste management and solvent supply challenges.</p>
+</div>
+</div>
+</div>
+</section>
 
-    <!-- Process Section -->
-    <section id="process" class="fullpage-section">
-        <div class="container">
-            <h2 class="section-title">Our Process</h2>
-            <div class="process-steps">
-                <div class="step">
-                    <div class="step-icon">
-                        <i class="fas fa-utensils"></i>
-                    </div>
-                    <div class="step-title">Food Waste Collection</div>
-                    <p>Collecting food waste from research institute canteens</p>
-                </div>
-                <div class="step">
-                    <div class="step-icon">
-                        <i class="fas fa-flask"></i>
-                    </div>
-                    <div class="step-title">Fermentation Process</div>
-                    <p>Converting waste through yeast fermentation process</p>
-                </div>
-                <div class="step">
-                    <div class="step-icon">
-                        <i class="fas fa-wine-bottle"></i>
-                    </div>
-                    <div class="step-title">Ethanol Separation</div>
-                    <p>Distilate ethanol into desired grade</p>
-                </div>
-                <div class="step">
-                    <div class="step-icon">
-                        <i class="fas fa-truck"></i>
-                    </div>
-                    <div class="step-title">Distribution On-site</div>
-                    <p>Direct distribution within the institute</p>
-                </div>
-            </div>
-            
-            <div class="chemical-equation">
+<!-- Process Section -->
+<section id="process" class="fullpage-section">
+<div class="container">
+<h2 class="section-title">Our Process</h2>
+<div class="process-steps">
+<div class="step">
+<div class="step-icon">
+<i class="fas fa-utensils"></i>
+</div>
+<div class="step-title">Food Waste Collection</div>
+<p>Collecting food waste from research institute canteens</p>
+</div>
+<div class="step">
+<div class="step-icon">
+<i class="fas fa-flask"></i>
+</div>
+<div class="step-title">Fermentation Process</div>
+<p>Converting waste through yeast fermentation process</p>
+</div>
+<div class="step">
+<div class="step-icon">
+<i class="fas fa-wine-bottle"></i>
+</div>
+<div class="step-title">Ethanol Separation</div>
+<p>Distilate ethanol into desired grade</p>
+</div>
+<div class="step">
+<div class="step-icon">
+<i class="fas fa-truck"></i>
+</div>
+<div class="step-title">Distribution On-site</div>
+<p>Direct distribution within the institute</p>
+</div>
+</div>
+
+<div class="chemical-equation">
+                <p>The scientific behind convertion of food waste into ethanol through enzymatic hydrolysis and fermentation:</p>
                 <p>The convertion of food waste into ethanol through enzymatic hydrolysis and fermentation:</p>
-                <div class="equation">
-                    <p>\[(C_6H_{10}O_5)_n + nH_2O \xrightarrow{\text{enzyme}} nC_6H_{12}O_6\]</p>
-                    <p>\[C_6H_{12}O_6 \xrightarrow{\text{yeast}} 2C_2H_5OH + 2CO_2\]</p>
-                </div>
-            </div>
-        </div>
-    </section>
+<div class="equation">
+<p>\[(C_6H_{10}O_5)_n + nH_2O \xrightarrow{\text{enzyme}} nC_6H_{12}O_6\]</p>
+<p>\[C_6H_{12}O_6 \xrightarrow{\text{yeast}} 2C_2H_5OH + 2CO_2\]</p>
+</div>
+</div>
+</div>
+</section>
 
-    <!-- Benefits Section -->
-    <section id="benefits" class="fullpage-section">
-        <div class="container">
-            <h2 class="section-title">Why Choose ÉthaVriti?</h2>
-            <div class="card">
-                <ul class="benefit-list">
-                    <li><strong>Waste to Product:</strong> Transform food waste into valuable research solvent</li>
-                    <li><strong>On-site Production:</strong> Zero transportation costs and reduced carbon footprint</li>
-                    <li><strong>Dual-grade Flexibility:</strong> Production of both 98° and 70° ethanol according to demand</li>
-                    <li><strong>Sustainable Solution:</strong> Addresses both waste management and supply chain challenges</li>
-                    <li><strong>Cost Effective:</strong> Significant savings compared to traditional sourcing</li>
-                </ul>
-                <!--
-                <div class="proof-box">
-                   <h3>Proof of Concept @ CNRS</h3>
-                   <p>100L/week production • 50L of 98° @ €10.0/L • 50L of 70° @ €6.5/L</p>
-                   <p><strong>Total: €850/week revenue potential</strong></p>
-                </div>
-                -->
-            </div>
-        </div>
-    </section>
+<!-- Benefits Section -->
+<section id="benefits" class="fullpage-section">
+<div class="container">
+<h2 class="section-title">Why Choose ÉthaVriti?</h2>
+<div class="card">
+<ul class="benefit-list">
+<li><strong>Waste to Product:</strong> Transform food waste into valuable research solvent</li>
+<li><strong>On-site Production:</strong> Zero transportation costs and reduced carbon footprint</li>
+<li><strong>Dual-grade Flexibility:</strong> Production of both 98° and 70° ethanol according to demand</li>
+<li><strong>Sustainable Solution:</strong> Addresses both waste management and supply chain challenges</li>
+<li><strong>Cost Effective:</strong> Significant savings compared to traditional sourcing</li>
+</ul>
+<!--
+               <div class="proof-box">
+                  <h3>Proof of Concept @ Pilot Sites</h3>
+                  <p>100L/week production • 50L of 98° @ €10.0/L • 50L of 70° @ €6.5/L</p>
+                  <p><strong>Total: €850/week revenue potential</strong></p>
+               </div>
+               -->
+</div>
+</div>
+</section>
 
-    <!-- Market Section -->
-    <section id="market" class="fullpage-section">
-        <div class="container">
-            <h2 class="section-title">Market Potential</h2>
-            <div class="card">
-                <h3>Projected Growth</h3>
-                <p>We project implementing to:</p>
-                <ul class="benefit-list">
-                    <li>6 institutes in Montpellier: 5,000 L/week (€42,500/week)</li>
-                    <li>50+ institutes across France: 300,000 L/week (€2,550,000/week)</li>
-                </ul>
-                
-                <h3>Additional Market Sectors (Montpellier Monthly Estimate)</h3>
-                <table class="market-table">
-                    <tr>
-                        <th>Industry Sector</th>
-                        <th>Equivalent in 100-liter Units</th>
-                        <th>Market Value @ €850/100L</th>
-                    </tr>
-                    <tr>
-                        <td>Pharmaceuticals & Biotech</td>
-                        <td>50-100</td>
-                        <td>€42,500-€85,000</td>
-                    </tr>
-                    <tr>
-                        <td>Cosmetics & Personal Care</td>
-                        <td>30-70</td>
-                        <td>€25,500-€59,500</td>
-                    </tr>
-                    <tr>
-                        <td>Food & Beverage Processing</td>
-                        <td>20-50</td>
-                        <td>€17,000-€42,500</td>
-                    </tr>
-                    <tr>
-                        <td>Agriculture & Viticulture</td>
-                        <td>10-30</td>
-                        <td>€8,500-€25,500</td>
-                    </tr>
-                    <tr>
-                        <th>Total</th>
-                        <th>110-250</th>
-                        <th>€93,500-€212,500</th>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </section>
+<!-- Market Section -->
+<section id="market" class="fullpage-section">
+<div class="container">
+<h2 class="section-title">Market Potential</h2>
+<div class="card">
+<h3>Projected Growth</h3>
+<p>We project to:</p>
+<ul class="benefit-list">
+<li>6 institutes in south of France: 5,000 L/week (€42,500/week)</li>
+<li>50+ institutes across France: 300,000 L/week (€2,550,000/week)</li>
+</ul>
 
-    <!-- Needs Section -->
-    <section id="needs" class="fullpage-section">
-        <div class="container">
-            <h2 class="section-title">What We Need</h2>
-            <div class="flex-container">
-                <div class="card">
-                    <h3>Support Requirements</h3>
-                    <ul class="benefit-list">
-                        <li>Space within research premises</li>
-                        <li>Access to food waste sources</li>
-                        <li>Institutional support for pilot program</li>
-                        <li>Minimal early-stage funding for setup</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>Partnership Benefits</h3>
-                    <ul class="benefit-list">
-                        <li>Reduced waste management costs</li>
-                        <li>Reliable, on-site ethanol supply</li>
-                        <li>Demonstration of sustainability leadership</li>
-                        <li>Potential revenue sharing opportunities</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
+<h3>Additional Market Sectors (Montpellier Monthly Estimate)</h3>
+<table class="market-table">
+<tr>
+<th>Industry Sector</th>
+<th>Equivalent in 100-liter Units</th>
+<th>Market Value @ €850/100L</th>
+</tr>
+<tr>
+<td>Pharmaceuticals & Biotech</td>
+<td>50-100</td>
+<td>€42,500-€85,000</td>
+</tr>
+<tr>
+<td>Cosmetics & Personal Care</td>
+<td>30-70</td>
+<td>€25,500-€59,500</td>
+</tr>
+<tr>
+<td>Food & Beverage Processing</td>
+<td>20-50</td>
+<td>€17,000-€42,500</td>
+</tr>
+<tr>
+<td>Agriculture & Viticulture</td>
+<td>10-30</td>
+<td>€8,500-€25,500</td>
+</tr>
+<tr>
+<th>Total</th>
+<th>110-250</th>
+<th>€93,500-€212,500</th>
+</tr>
+</table>
+</div>
+</div>
+</section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="fullpage-section">
-        <div class="container">
-            <h2 class="section-title">Contact Us</h2>
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="footer-logo">
-                        <img src="image/logo.png" alt="ÉthaVriti Logo">
-                        <span>ÉthaVriti</span>
-                    </div>
-                    <div class="meaning">
-                        <p>Étha = Ethanol • Vriti (Sanskrit) = Mindset</p>
-                        <p>Company with a green mindset of ethanol production</p>
-                    </div>
-                    <div class="tagline">"Let's build a greener future together"</div>
-                    
-                    <div class="contact-details">
-                        <p>Dr. Inderdip SHERE, Founder</p>
-                        <p>https://inderdipshere.github.io/ethavriti</p>
-                    </div>
-                    
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
-                        <a href="#"><i class="fas fa-envelope"></i></a>
-                    </div>
-                </div>
-                <div class="contact-form">
-                    <h3>Get in Touch</h3>
-                    <form>
-                        <input type="text" placeholder="Your Name" required>
-                        <input type="email" placeholder="Your Email" required>
-                        <textarea placeholder="Your Message" rows="5" required></textarea>
-                        <button type="submit">Send Message</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- Needs Section -->
+<section id="needs" class="fullpage-section">
+<div class="container">
+<h2 class="section-title">What We Need</h2>
+<div class="flex-container">
+<div class="card">
+<h3>Support Requirements</h3>
+<ul class="benefit-list">
+<li>Space within research premises</li>
+<li>Access to food waste sources</li>
+<li>Institutional support for pilot program</li>
+<li>Minimal early-stage funding for setup</li>
+</ul>
+</div>
+<div class="card">
+<h3>Partnership Benefits</h3>
+<ul class="benefit-list">
+<li>Reduced waste management costs</li>
+<li>Reliable, on-site ethanol supply</li>
+<li>Demonstration of sustainability leadership</li>
+<li>Potential revenue sharing opportunities</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
 
-    <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    // Update active navigation link
-                    document.querySelectorAll('.nav-links a').forEach(link => {
-                        link.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                    
-                    // Scroll to section
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
+<!-- Contact Section -->
+<section id="contact" class="fullpage-section">
+<div class="container">
+<h2 class="section-title">Contact Us</h2>
+<div class="contact-content">
+<div class="contact-info">
+<div class="footer-logo">
+<img src="image/logo.png" alt="ÉthaVriti Logo">
+<span>ÉthaVriti</span>
+</div>
+<div class="meaning">
+<p>Étha = Ethanol • Vriti (Sanskrit) = Mindset</p>
+<p>Company with a green mindset of ethanol production</p>
+</div>
+<div class="tagline">"Let's build a greener future together"</div>
 
-        // Mobile menu toggle
-        const menuToggle = document.querySelector('.menu-toggle');
-        const navLinks = document.querySelector('.nav-links');
+<div class="contact-details">
+<p>Dr. Inderdip SHERE, Founder</p>
+<p>https://inderdipshere.github.io/ethavriti</p>
+<p>Numéro Siret : <strong>99094339100013</strong></p>
+</div>
 
-        if (menuToggle) {
-            menuToggle.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-            });
-        }
+<div class="social-links">
+<a href="#"><i class="fab fa-twitter"></i></a>
+<a href="#"><i class="fab fa-linkedin"></i></a>
+<a href="#"><i class="fab fa-github"></i></a>
+<a href="#"><i class="fas fa-envelope"></i></a>
+</div>
+</div>
+<div class="contact-form">
+<h3>Get in Touch</h3>
+<form>
+<input type="text" placeholder="Your Name" required>
+<input type="email" placeholder="Your Email" required>
+<textarea placeholder="Your Message" rows="5" required></textarea>
+<button type="submit">Send Message</button>
+</form>
+</div>
+</div>
+</div>
+</section>
 
-        // Update active navigation link on scroll
-        window.addEventListener('scroll', () => {
-            const sections = document.querySelectorAll('.fullpage-section');
-            const navLinks = document.querySelectorAll('.nav-links a');
-            
-            let currentSection = '';
-            
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                
-                if (pageYOffset >= sectionTop - 100) {
-                    currentSection = section.getAttribute('id');
-                }
-            });
-            
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${currentSection}`) {
-                    link.classList.add('active');
-                }
-            });
-        });
+<script>
+// Smooth scrolling for navigation links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+anchor.addEventListener('click', function (e) {
+e.preventDefault();
 
-        // Simple animation on scroll
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
+const targetId = this.getAttribute('href');
+if (targetId === '#') return;
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate');
-                }
-            });
-        }, observerOptions);
+const targetElement = document.querySelector(targetId);
+if (targetElement) {
+// Update active navigation link
+document.querySelectorAll('.nav-links a').forEach(link => {
+link.classList.remove('active');
+});
+this.classList.add('active');
 
-        document.querySelectorAll('.card, .step').forEach(el => {
-            observer.observe(el);
-        });
-    </script>
+// Scroll to section
+window.scrollTo({
+top: targetElement.offsetTop - 80,
+behavior: 'smooth'
+});
+}
+});
+});
+
+// Mobile menu toggle
+const menuToggle = document.querySelector('.menu-toggle');
+const navLinks = document.querySelector('.nav-links');
+
+if (menuToggle) {
+menuToggle.addEventListener('click', () => {
+navLinks.classList.toggle('active');
+});
+}
+
+// Update active navigation link on scroll
+window.addEventListener('scroll', () => {
+const sections = document.querySelectorAll('.fullpage-section');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+let currentSection = '';
+
+sections.forEach(section => {
+const sectionTop = section.offsetTop;
+const sectionHeight = section.clientHeight;
+
+if (pageYOffset >= sectionTop - 100) {
+currentSection = section.getAttribute('id');
+}
+});
+
+navLinks.forEach(link => {
+link.classList.remove('active');
+if (link.getAttribute('href') === `#${currentSection}`) {
+link.classList.add('active');
+}
+});
+});
+
+// Simple animation on scroll
+const observerOptions = {
+root: null,
+rootMargin: '0px',
+threshold: 0.1
+};
+
+const observer = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+entry.target.classList.add('animate');
+}
+});
+}, observerOptions);
+
+document.querySelectorAll('.card, .step').forEach(el => {
+observer.observe(el);
+});
+</script>
 </body>
 </html>
