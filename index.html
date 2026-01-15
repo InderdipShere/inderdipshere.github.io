@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inderdip Shere - Welcome</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .greeting {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            animation: fadeIn 1.5s ease-in;
+        }
+
+        .links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            min-width: 250px;
+            transition: transform 0.3s, background 0.3s;
+            text-decoration: none;
+            color: white;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            animation: fadeIn 2s ease-in;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .greeting {
+                font-size: 1.2rem;
+            }
+
+            .links {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hello!</h1>
+        <p class="greeting">Welcome to Inderdip Shere's website</p>
+        
+        <div class="links">
+            <a href="/personal/" class="card">
+                <h2>Personal Website</h2>
+                <p>Research, Publications & Academic Portfolio</p>
+            </a>
+            
+            <a href="/ethavriti/" class="card">
+                <h2>ÉthaVriti</h2>
+                <p>Turning Food Waste into Green Solvent</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
