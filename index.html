@@ -62,9 +62,10 @@
             animation: fadeIn 2s ease-in;
         }
 
-        .card:hover {
+        .card:hover, .card:focus {
             transform: translateY(-5px);
             background: rgba(255, 255, 255, 0.2);
+            outline: 2px solid white;
         }
 
         .card h2 {
@@ -110,13 +111,13 @@
         <p class="greeting">Welcome to Inderdip Shere's website</p>
         
         <div class="links">
-            <a href="/personal/" class="card">
+            <a href="/personal/" class="card" aria-label="Visit Personal Website - Research, Publications and Academic Portfolio">
                 <h2>Personal Website</h2>
                 <p>Research, Publications & Academic Portfolio</p>
             </a>
             
-            <a href="/ethavriti/" class="card">
-                <h2>ÉthaVriti</h2>
+            <a href="/ethavriti/" class="card" aria-label="Visit ÉthaVriti - Turning Food Waste into Green Solvent">
+                <h2><span aria-label="Étha Vriti">ÉthaVriti</span></h2>
                 <p>Turning Food Waste into Green Solvent</p>
             </a>
         </div>
