@@ -1,4 +1,4 @@
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJe2s4BnRy_xwcq0yAA5lt1EIFTpmPBiQAWmHcqBKMB1dkJ0hSM-04ZxkmgwbYY__P/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6oWHpuWBBbxi8tnczdcKuDiWQ0qKmmeeuDbklO23YMrQ4tBMrvkc-tR1I8UlVxCSb/exec";
 
 async function loadGuest() {
   const id = getGuestId();
