@@ -15,7 +15,7 @@ async function loadGuest() {
 
     if (data.success && data.guest) {
       const g = data.guest;
-      box.textContent = `Dear ${g.FamilyName}, your presence means a lot to us. Thank you for being part of this journey from one generation to the next.`;
+      box.textContent = `Dear ${g["Family Name"]}, your presence means a lot to us. Thank you for being part of this journey from one generation to the next.`;
     } else {
       box.textContent = "Welcome, dear family and friends. Your presence means a lot to us.";
     }
