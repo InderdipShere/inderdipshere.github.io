@@ -127,3 +127,11 @@ footer {
   .nav-links a { display: inline-block; margin: 6px 12px 6px 0; }
   .schedule-item { grid-template-columns: 1fr; }
 }
+.guest-info-card {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.30);
+  line-height: 1.8;
+}
