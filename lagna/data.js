@@ -1,40 +1,96 @@
-// Google Apps Script Endpoint
-// Replace this URL with your actual Google Apps Script deployment URL
-const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/d/YOUR_SCRIPT_ID/usercopy";
+// Google Apps Script Endpoint - using existing script
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJe2s4BnRy_xwcq0yAA5lt1EIFTpmPBiQAWmHcqBKMB1dkJ0hSM-04ZxkmgwbYY__P/exec";
 
 // Initialize data from Google Sheets via Google Apps Script
 let guests = {};
 let schedules = {};
 let ceremonies = [];
 
+function getGuestId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("guest") || "F001";
+}
+
 // Fetch data from Google Apps Script
 async function loadDataFromGoogleSheets() {
   try {
-    const response = await fetch(GOOGLE_APPS_SCRIPT_URL);
+    // Fetch guests data
+    const guestResponse = await fetch(GOOGLE_SCRIPT_URL);
+    const guestData = await guestResponse.json();
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    if (guestData.success && guestData.guests) {
+      // Build guests object from the response
+      guestData.guests.forEach(g => {
+        guests[g["Family ID"]] = {
+          familyId: g["Family ID"],
+          familyName: g["Family Name"],
+          side: g["Side"],
+          category: g["Category"],
+          contactPerson: g["Contact Person"],
+          phone: g["Phone"],
+          adults: g["Adults"],
+          children: g["Children"],
+          total: g["Total"],
+          day1: g["Day 1"],
+          day2: g["Day 2"],
+          rsvp: g["RSVP"],
+          qrGenerated: g["QR Generated"],
+          welcome: `Dear ${g["Family Name"]}, your presence means a lot to us. Thank you for being part of this journey from one generation to the next.`
+        };
+      });
     }
-    
-    const data = await response.json();
-    
-    // Map the fetched data to your application variables
-    guests = data.guests || {};
-    schedules = data.schedules || {};
-    ceremonies = data.ceremonies || [];
     
     // Trigger the initial page load functions after data is loaded
     loadGuest();
     showDay("day1");
     loadCeremonies();
     
-    console.log("Data loaded successfully from Google Sheets");
+    console.log("Data loaded successfully from Google Sheets", guests);
   } catch (error) {
     console.error("Error loading data from Google Sheets:", error);
     
     // Fallback to default data if Google Sheets fetch fails
     loadDefaultData();
   }
+}
+
+function loadGuest() {
+  const id = getGuestId();
+  const guest = guests[id];
+  const box = document.getElementById("personalWelcome");
+  if (guest) {
+    box.textContent = guest.welcome;
+  } else {
+    box.textContent = "Welcome, dear family and friends. Your presence means a lot to us.";
+  }
+}
+
+function showDay(day) {
+  document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
+  const buttons = document.querySelectorAll(".tab");
+  if (day === "day1") buttons[0].classList.add("active");
+  if (day === "day2") buttons[1].classList.add("active");
+
+  const container = document.getElementById("scheduleContainer");
+  container.innerHTML = schedules[day].map(item => `
+    <div class="schedule-item">
+      <div class="time">${item[0]}</div>
+      <div>
+        <strong>${item[1]}</strong>
+        <p>${item[2]}</p>
+      </div>
+    </div>
+  `).join("");
+}
+
+function loadCeremonies() {
+  const grid = document.getElementById("ceremonyGrid");
+  grid.innerHTML = ceremonies.map(c => `
+    <article class="card">
+      <h3>${c[0]}</h3>
+      <p>${c[1]}</p>
+    </article>
+  `).join("");
 }
 
 // Fallback default data (in case Google Sheets is unavailable)
