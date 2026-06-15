@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pradip Smruti Vivaah Sohala</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <nav>
+      <div class="brand">प्रदीप स्मृती विवाह सोहळा</div>
+      <div class="nav-links">
+        <a href="#schedule">Schedule</a>
+        <a href="#ceremony">Ceremony Guide</a>
+        <a href="#memory">Share Memory</a>
+        <a href="#help">AI Help</a>
+      </div>
+    </nav>
+
+    <section class="hero-content">
+      <p class="eyebrow">Carrying Forward a Legacy</p>
+      <h1>From One Generation to the Next</h1>
+      <p class="subtitle">
+        A celebration of love, legacy, spirituality and new beginnings.
+      </p>
+      <div id="personalWelcome" class="welcome-card">
+        Welcome, dear family and friends. Your presence means a lot to us.
+      </div>
+      <div class="button-row">
+        <a class="btn primary" href="#rsvp">RSVP</a>
+        <a class="btn secondary" href="#schedule">View Schedule</a>
+      </div>
+    </section>
+  </header>
+
+  <main>
+    <section id="story" class="section">
+      <h2>Our Stories</h2>
+      <div class="grid two">
+        <article class="card">
+          <h3>Inderdip's Journey</h3>
+          <p>A short visual story from childhood to the present, showing growth, family, learning and life journey.</p>
+        </article>
+        <article class="card">
+          <h3>Deepali's Journey</h3>
+          <p>A short visual story from childhood to the present, showing her values, family, dreams and life journey.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="schedule" class="section alt">
+      <h2>Wedding Schedule</h2>
+      <div class="tabs">
+        <button class="tab active" onclick="showDay('day1')">Day 1</button>
+        <button class="tab" onclick="showDay('day2')">Day 2</button>
+      </div>
+      <div id="scheduleContainer"></div>
+    </section>
+
+    <section id="ceremony" class="section">
+      <h2>Ceremony Guide</h2>
+      <p class="section-intro">
+        A digital companion explaining what each ceremony means, why it is performed, and how guests can participate.
+      </p>
+      <div id="ceremonyGrid" class="grid three"></div>
+    </section>
+
+    <section id="memory" class="section alt">
+      <h2>Share a Memory</h2>
+      <p>
+        Guests can upload a short video, photo, or written message. These memories will be used for “Stories of Us”.
+      </p>
+      <div class="button-row">
+        <a class="btn primary" href="#" onclick="alert('Later this will open your Google Form or upload page.')">Upload Video</a>
+        <a class="btn secondary" href="#" onclick="alert('Later this will open the shared photo upload folder.')">Upload Photos</a>
+      </div>
+    </section>
+
+    <section id="pradip" class="section">
+      <h2>Pradip Smruti</h2>
+      <article class="card legacy">
+        <h3>The Man Who Made This Possible</h3>
+        <p>
+          Dedicated to Shri Pradipkumar Shere — a life of courage, conviction, discipline, leadership and responsibility.
+        </p>
+        <p>
+          His strength shaped us. His values guide us. His legacy continues through us.
+        </p>
+      </article>
+    </section>
+
+    <section id="rsvp" class="section alt">
+      <h2>RSVP</h2>
+      <p>
+        This section will later connect to your Google Sheet or Google Form.
+      </p>
+      <form class="form" onsubmit="event.preventDefault(); alert('RSVP workflow will be connected later.');">
+        <label>Family Name <input type="text" placeholder="Example: Patil Family"></label>
+        <label>Adults <input type="number" min="0"></label>
+        <label>Children <input type="number" min="0"></label>
+        <label>Will you attend? 
+          <select>
+            <option>Pending</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </label>
+        <button class="btn primary" type="submit">Submit RSVP</button>
+      </form>
+    </section>
+
+    <section id="help" class="section">
+      <h2>Wedding Companion AI</h2>
+      <p>
+        Ask about schedule, ceremony meaning, venue, upload links, or what is happening next.
+      </p>
+      <div class="chat-box">
+        <div id="chatLog" class="chat-log"></div>
+        <div class="chat-input">
+          <input id="questionInput" type="text" placeholder="Ask: What happens after Haldi?" />
+          <button onclick="answerQuestion()">Ask</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    प्रदीप स्मृती विवाह सोहळा · From One Generation to the Next
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
