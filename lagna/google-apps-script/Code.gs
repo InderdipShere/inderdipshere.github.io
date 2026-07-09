@@ -1,0 +1,194 @@
+const SHEET_NAME = "Guest Master List";
+
+function doGet(e) {
+  const inviteToken = String(e.parameter.invite || "").trim();
+  const checkinToken = String(e.parameter.checkin || "").trim();
+  const sheet = getGuestSheet();
+  const records = readRecords(sheet);
+
+  if (inviteToken) {
+    const guest = records.find(row => String(row["Invite Token"]).trim() === inviteToken);
+    return jsonOutput({
+      success: !!guest,
+      guest: guest || null
+    });
+  }
+
+  if (checkinToken) {
+    const guest = records.find(row => String(row["Check-in Token"]).trim() === checkinToken);
+    return jsonOutput({
+      success: !!guest,
+      guest: guest || null
+    });
+  }
+
+  return jsonOutput({
+    success: true,
+    guests: records
+  });
+}
+
+function doPost(e) {
+  const body = parseBody(e);
+
+  if (body.action === "rsvp") {
+    return updateRsvp(body);
+  }
+
+  if (body.action === "checkin") {
+    return markCheckedIn(body);
+  }
+
+  return jsonOutput({
+    success: false,
+    error: "Unknown action"
+  });
+}
+
+function updateRsvp(body) {
+  const inviteToken = String(body.invite || "").trim();
+  const rsvp = normalizeRsvp(body.rsvp);
+  const adults = Math.max(0, Number(body.adults || 0));
+  const children = Math.max(0, Number(body.children || 0));
+  const total = adults + children;
+  const specialRequest = String(body.specialRequest || "Nil").trim() || "Nil";
+
+  if (!inviteToken) {
+    return jsonOutput({ success: false, error: "Missing invite token" });
+  }
+
+  if (!["Pending", "Yes", "No"].includes(rsvp)) {
+    return jsonOutput({ success: false, error: "Invalid RSVP value" });
+  }
+
+  const sheet = getGuestSheet();
+  const table = readTable(sheet);
+  const rowIndex = table.records.findIndex(row => String(row["Invite Token"]).trim() === inviteToken);
+
+  if (rowIndex === -1) {
+    return jsonOutput({ success: false, error: "Invite token not found" });
+  }
+
+  const rowNumber = rowIndex + 2;
+  setCell(sheet, table.headers, rowNumber, "RSVP", rsvp);
+  setCell(sheet, table.headers, rowNumber, "Adults", rsvp === "Yes" ? adults : 0);
+  setCell(sheet, table.headers, rowNumber, "Children", rsvp === "Yes" ? children : 0);
+  setCell(sheet, table.headers, rowNumber, "Total", rsvp === "Yes" ? total : 0);
+  setCell(sheet, table.headers, rowNumber, "Special Request", specialRequest);
+
+  let checkinToken = table.records[rowIndex]["Check-in Token"];
+  if (rsvp === "Yes") {
+    if (!checkinToken) {
+      checkinToken = makeToken("CHK");
+      setCell(sheet, table.headers, rowNumber, "Check-in Token", checkinToken);
+    }
+    setCell(sheet, table.headers, rowNumber, "QR Generated", "Yes");
+  } else {
+    setCell(sheet, table.headers, rowNumber, "QR Generated", "No");
+  }
+
+  return jsonOutput({
+    success: true,
+    guest: readRecords(sheet)[rowIndex]
+  });
+}
+
+function markCheckedIn(body) {
+  const checkinToken = String(body.checkin || "").trim();
+
+  if (!checkinToken) {
+    return jsonOutput({ success: false, error: "Missing check-in token" });
+  }
+
+  const sheet = getGuestSheet();
+  const table = readTable(sheet);
+  const rowIndex = table.records.findIndex(row => String(row["Check-in Token"]).trim() === checkinToken);
+
+  if (rowIndex === -1) {
+    return jsonOutput({ success: false, error: "Check-in token not found" });
+  }
+
+  const rowNumber = rowIndex + 2;
+  setCell(sheet, table.headers, rowNumber, "Checked In", "Yes");
+
+  return jsonOutput({
+    success: true,
+    guest: readRecords(sheet)[rowIndex]
+  });
+}
+
+function generateMissingTokens() {
+  const sheet = getGuestSheet();
+  const table = readTable(sheet);
+
+  table.records.forEach((record, index) => {
+    const rowNumber = index + 2;
+
+    if (record["Family ID"] && !record["Invite Token"]) {
+      setCell(sheet, table.headers, rowNumber, "Invite Token", makeToken("INV"));
+    }
+
+    if (String(record["RSVP"]).trim() === "Yes" && !record["Check-in Token"]) {
+      setCell(sheet, table.headers, rowNumber, "Check-in Token", makeToken("CHK"));
+      setCell(sheet, table.headers, rowNumber, "QR Generated", "Yes");
+    }
+  });
+}
+
+function getGuestSheet() {
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+}
+
+function readTable(sheet) {
+  const values = sheet.getDataRange().getValues();
+  const headers = values[0].map(header => String(header).trim());
+  const records = values.slice(1).map(row => {
+    const record = {};
+    headers.forEach((header, index) => {
+      record[header] = row[index];
+    });
+    return record;
+  });
+
+  return { headers, records };
+}
+
+function readRecords(sheet) {
+  return readTable(sheet).records;
+}
+
+function setCell(sheet, headers, rowNumber, headerName, value) {
+  const colIndex = headers.indexOf(headerName);
+  if (colIndex === -1) {
+    throw new Error("Missing column: " + headerName);
+  }
+  sheet.getRange(rowNumber, colIndex + 1).setValue(value);
+}
+
+function parseBody(e) {
+  if (e.postData && e.postData.contents) {
+    try {
+      return JSON.parse(e.postData.contents);
+    } catch (error) {
+      return e.parameter || {};
+    }
+  }
+  return e.parameter || {};
+}
+
+function normalizeRsvp(value) {
+  const raw = String(value || "Pending").trim().toLowerCase();
+  if (raw === "yes" || raw === "confirmed") return "Yes";
+  if (raw === "no" || raw === "declined") return "No";
+  return "Pending";
+}
+
+function makeToken(prefix) {
+  return prefix + "-" + Utilities.getUuid().replace(/-/g, "").substring(0, 16);
+}
+
+function jsonOutput(payload) {
+  return ContentService
+    .createTextOutput(JSON.stringify(payload))
+    .setMimeType(ContentService.MimeType.JSON);
+}
