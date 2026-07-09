@@ -3,14 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pradipkumar Smruti Vivaah Sohala</title>
+  <title>Deepali & Inderdip Wedding Invitation</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="hero">
     <nav>
-      <div class="brand">प्रदीपकुमार स्मृती विवाह सोहळा</div>
+      <div class="brand">
+        <span>Deepali <span class="love-amp" aria-label="and">&</span> Inderdip</span>
+        <small>प्रदीपकुमार स्मृती विवाह सोहळा</small>
+      </div>
       <div class="nav-links">
+        <a href="#story">Bride & Groom</a>
         <a href="#schedule">Schedule</a>
         <a href="#ceremony">Ceremony Guide</a>
         <a href="#memory">Share Memory</a>
@@ -19,11 +24,18 @@
     </nav>
 
     <section class="hero-content">
-      <p class="eyebrow">Carrying Forward a Legacy</p>
-      <h1>From One Generation to the Next</h1>
+      <p class="eyebrow">Wedding Invitation · विवाह निमंत्रण</p>
+      <h1>Deepali <span class="love-amp hero-amp" aria-label="and">&</span> Inderdip</h1>
       <p class="subtitle">
-        A celebration of love, legacy, spirituality and new beginnings.
+        With blessings, gratitude, and joy, we invite you to celebrate our wedding ceremony and the beginning of our companionship.
       </p>
+      <div class="countdown-card" aria-label="Wedding countdown">
+        <span class="countdown-label">Wedding countdown</span>
+        <div id="countdownClock" class="countdown-clock">Loading...</div>
+      </div>
+      <div id="inviteStatusBanner" class="status-banner pending">
+        RSVP not completed. Invitation pass is not active.
+      </div>
       <div id="personalWelcome" class="welcome-card">
         <div id="guestInfoCard" class="guest-info-card"></div>
         Welcome, dear family and friends. Your presence means a lot to us.
@@ -36,35 +48,61 @@
   </header>
 
   <main>
+    <div class="ticker" aria-label="Guest reminders">
+      <div id="guestTickerText" class="ticker-track">
+        RSVP not completed. Invitation pass is not active. Share your memories, photos, and blessings for Stories of Us.
+      </div>
+    </div>
+
     <section id="story" class="section">
-      <h2>Our Stories</h2>
+      <div class="section-heading">
+        <span class="section-kicker">Bride & Groom</span>
+        <h2>Our Stories</h2>
+      </div>
       <div class="grid two">
-        <article class="card">
-          <h3>Inderdip's Journey</h3>
-          <p>A short visual story from childhood to the present, showing growth, family, learning and life journey.</p>
+        <article class="story-card bride-card">
+          <div class="story-preview">
+            <span>Bride</span>
+          </div>
+          <div>
+            <p class="story-role">Bride · वधू</p>
+            <h3>Deepali</h3>
+            <p>A visual journey of family, values, dreams, and the moments that shaped her path.</p>
+          </div>
         </article>
-        <article class="card">
-          <h3>Deepali's Journey</h3>
-          <p>A short visual story from childhood to the present, showing her values, family, dreams and life journey.</p>
+        <article class="story-card groom-card">
+          <div class="story-preview">
+            <span>Groom</span>
+          </div>
+          <div>
+            <p class="story-role">Groom · वर</p>
+            <h3>Inderdip</h3>
+            <p>A visual journey of childhood, learning, family, responsibility, and new beginnings.</p>
+          </div>
         </article>
       </div>
     </section>
 
     <section id="schedule" class="section alt">
-      <h2>Wedding Schedule</h2>
-      <div class="tabs">
-        <button class="tab active" onclick="showDay('day1')">Day 1</button>
-        <button class="tab" onclick="showDay('day2')">Day 2</button>
+      <div class="section-heading">
+        <span class="section-kicker">Official PDFs</span>
+        <h2>Wedding Schedule</h2>
       </div>
+      <p class="section-intro">
+        The final ceremony schedule will be shared as polished Day 1 and Day 2 PDF guides prepared from Overleaf.
+      </p>
       <div id="scheduleContainer"></div>
     </section>
 
     <section id="ceremony" class="section">
-      <h2>Ceremony Guide</h2>
+      <div class="section-heading">
+        <span class="section-kicker">Learn & Celebrate</span>
+        <h2>Ceremony Guide</h2>
+      </div>
       <p class="section-intro">
-        A digital companion explaining what each ceremony means, why it is performed, and how guests can participate.
+        A bilingual, artistic companion explaining the meaning, mood, and guest participation for each ceremony.
       </p>
-      <div id="ceremonyGrid" class="grid three"></div>
+      <div id="ceremonyGrid" class="ceremony-grid"></div>
     </section>
 
     <section id="memory" class="section alt">
@@ -79,7 +117,7 @@
     </section>
 
     <section id="pradip" class="section">
-      <h2>Pradip Smruti</h2>
+      <h2>Pradipkumar Smruti</h2>
       <article class="card legacy">
         <h3>The Man Who Made This Possible</h3>
         <p>
@@ -94,19 +132,20 @@
     <section id="rsvp" class="section alt">
       <h2>RSVP</h2>
       <p>
-        This section will later connect to your Google Sheet or Google Form.
+        Submit or update your RSVP using the same invitation link. Adult and children counts are entered here by the guest.
       </p>
-      <form class="form" onsubmit="event.preventDefault(); alert('RSVP workflow will be connected later.');">
-        <label>Family Name <input type="text" placeholder="Example: Patil Family"></label>
-        <label>Adults <input type="number" min="0"></label>
-        <label>Children <input type="number" min="0"></label>
+      <form id="rsvpForm" class="form" onsubmit="event.preventDefault(); alert('RSVP workflow will connect to Google Apps Script next.');">
+        <label>Family Name <input id="rsvpFamilyName" type="text" placeholder="Example: Patil Family"></label>
+        <label>Adults <input id="rsvpAdults" type="number" min="0" placeholder="0"></label>
+        <label>Children <input id="rsvpChildren" type="number" min="0" placeholder="0"></label>
         <label>Will you attend? 
-          <select>
+          <select id="rsvpAttendance">
             <option>Pending</option>
             <option>Yes</option>
             <option>No</option>
           </select>
         </label>
+        <label>Special Request <textarea id="rsvpSpecialRequest" rows="3" placeholder="Nil"></textarea></label>
         <button class="btn primary" type="submit">Submit RSVP</button>
       </form>
     </section>
@@ -117,17 +156,17 @@
         Ask about schedule, ceremony meaning, venue, upload links, or what is happening next.
       </p>
       <div class="chat-box">
-        <div id="chatLog" class="chat-log"></div>
+        <div id="chatLog" class="chat-log" aria-live="polite"></div>
         <div class="chat-input">
           <input id="questionInput" type="text" placeholder="Ask: What happens after Haldi?" />
-          <button onclick="answerQuestion()">Ask</button>
+          <button type="button" onclick="answerQuestion()">Ask</button>
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    प्रदीपकुमार स्मृती विवाह सोहळा · From One Generation to the Next
+    प्रदीपकुमार स्मृती विवाह सोहळा · Deepali & Inderdip · From One Generation to the Next
   </footer>
 
   <script src="data.js"></script>
