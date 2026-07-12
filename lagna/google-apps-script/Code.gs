@@ -1,4 +1,5 @@
 const SHEET_NAME = "Guest Master List";
+const BLESSINGS_SHEET_NAME = "Blessings";
 
 function doGet(e) {
   const inviteToken = String(e.parameter.invite || "").trim();
@@ -39,10 +40,44 @@ function doPost(e) {
     return markCheckedIn(body);
   }
 
+  if (body.action === "blessing") {
+    return saveBlessing(body);
+  }
+
   return jsonOutput({
     success: false,
     error: "Unknown action"
   });
+}
+
+function saveBlessing(body) {
+  const inviteToken = String(body.invite || body.inviteToken || "").trim();
+  const familyName = String(body.familyName || "").trim();
+  const name = String(body.name || "").trim();
+  const message = String(body.message || "").trim();
+  const consent = String(body.consent || "").trim() === "Yes" ? "Yes" : "No";
+
+  if (!message) {
+    return jsonOutput({ success: false, error: "Missing blessing message" });
+  }
+
+  if (consent !== "Yes") {
+    return jsonOutput({ success: false, error: "Consent is required" });
+  }
+
+  const sheet = getOrCreateBlessingsSheet();
+  sheet.appendRow([
+    new Date(),
+    inviteToken,
+    familyName,
+    name,
+    message.substring(0, 900),
+    consent,
+    "No",
+    "No"
+  ]);
+
+  return jsonOutput({ success: true });
 }
 
 function updateRsvp(body) {
@@ -137,6 +172,30 @@ function generateMissingTokens() {
 
 function getGuestSheet() {
   return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+}
+
+function getOrCreateBlessingsSheet() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = spreadsheet.getSheetByName(BLESSINGS_SHEET_NAME);
+
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet(BLESSINGS_SHEET_NAME);
+  }
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      "Timestamp",
+      "Invite Token",
+      "Family Name",
+      "Name",
+      "Blessing Message",
+      "Consent",
+      "Approved",
+      "Display on Website"
+    ]);
+  }
+
+  return sheet;
 }
 
 function readTable(sheet) {
