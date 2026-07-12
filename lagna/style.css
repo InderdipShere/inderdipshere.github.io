@@ -223,6 +223,20 @@ h1 {
   line-height: 1.65;
   max-width: 780px;
 }
+.subtitle,
+.welcome-card p,
+.section-intro,
+.story-card > div:last-child > p,
+.schedule-doc p,
+.ceremony-copy p,
+.legacy-copy p,
+#memory > p,
+#rsvp > p,
+#help > p {
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+}
 .grid { display: grid; gap: 18px; }
 .grid.two { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 .grid.three { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
@@ -234,33 +248,76 @@ h1 {
 }
 .story-card {
   display: grid;
-  grid-template-columns: 170px 1fr;
+  grid-template-columns: minmax(220px, 0.9fr) 1fr;
   gap: 22px;
   align-items: center;
-  min-height: 230px;
-  overflow: hidden;
+  min-height: 390px;
   padding: 18px;
   border-radius: 8px;
   background: #fffdf7;
   box-shadow: 0 14px 34px rgba(52, 34, 15, 0.12);
 }
-.story-preview {
-  display: grid;
-  min-height: 190px;
-  place-items: end start;
-  padding: 16px;
-  border-radius: 8px;
-  color: #fffdf7;
-  font-size: 1.7rem;
-  font-weight: bold;
-  background:
-    linear-gradient(155deg, rgba(182,66,85,0.92), rgba(240,139,83,0.50)),
-    url("assets/images/couple-hero.png") center / cover no-repeat;
+.story-slideshow {
+  position: relative;
+  min-height: 420px;
+  overflow: hidden;
 }
-.groom-card .story-preview {
-  background:
-    linear-gradient(155deg, rgba(54,95,124,0.92), rgba(92,145,99,0.46)),
-    url("assets/images/couple-hero.png") center / cover no-repeat;
+.story-slideshow figure {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  animation: story-fade var(--story-duration, 25s) infinite;
+  animation-delay: var(--slide-delay, 0s);
+}
+.story-slideshow:hover figure { animation-play-state: paused; }
+.story-slideshow figure:first-child { opacity: 1; }
+.story-slideshow figure:nth-child(2) { animation-delay: 5s; }
+.story-slideshow figure:nth-child(3) { animation-delay: 10s; }
+.story-slideshow figure:nth-child(4) { animation-delay: 15s; }
+.story-slideshow figure:nth-child(5) { animation-delay: 20s; }
+.bride-slideshow {
+  --story-duration: 155s;
+}
+.bride-slideshow figure {
+  animation-name: story-fade-long;
+}
+.groom-slideshow {
+  --story-duration: 120s;
+}
+.groom-slideshow figure {
+  animation-name: story-fade-long;
+}
+.story-slideshow img {
+  width: 100%;
+  height: 306px;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(52, 34, 15, 0.18);
+}
+.story-slideshow figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 318px;
+  min-height: 88px;
+  padding: 8px 10px 10px;
+  color: #3f2518;
+  background: transparent;
+  font-size: clamp(0.86rem, 1.25vw, 0.98rem);
+  font-weight: bold;
+  line-height: 1.28;
+  text-align: center;
+  text-align-last: center;
+}
+@keyframes story-fade {
+  0%, 17% { opacity: 1; }
+  22%, 100% { opacity: 0; }
+}
+@keyframes story-fade-long {
+  0%, 3.2% { opacity: 1; }
+  4.2%, 100% { opacity: 0; }
 }
 .story-role {
   color: #b64255;
@@ -274,7 +331,144 @@ h1 {
 .story-card p {
   line-height: 1.6;
 }
-.legacy { border-left: 6px solid #b38339; }
+.story-link {
+  display: inline-block;
+  margin-top: 12px;
+  color: #7a2e3a;
+  font-weight: bold;
+  text-decoration: none;
+  border-bottom: 2px solid #f08b53;
+}
+.story-link:hover {
+  color: #b64255;
+}
+.dedication-section {
+  background:
+    linear-gradient(180deg, rgba(255, 247, 237, 0.96), rgba(255, 240, 216, 0.96)),
+    radial-gradient(circle at 18% 18%, rgba(255, 216, 107, 0.28), transparent 32%),
+    radial-gradient(circle at 84% 20%, rgba(182, 66, 85, 0.16), transparent 30%);
+}
+.legacy {
+  overflow: hidden;
+  border-left: 6px solid #b38339;
+  background: #fffdf7;
+  border-radius: 8px;
+  box-shadow: 0 16px 36px rgba(52, 34, 15, 0.12);
+}
+.legacy-copy {
+  max-width: 900px;
+  padding: 28px;
+}
+.legacy-life {
+  display: inline-block;
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #fff0d8;
+  color: #7a2e3a;
+  font-weight: bold;
+}
+.legacy-age {
+  margin: 0 0 18px;
+  color: #76533c;
+  font-weight: bold;
+}
+.legacy-copy h3 {
+  margin: 0 0 12px;
+  color: #3f2518;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+.legacy-copy p {
+  line-height: 1.68;
+}
+.legacy-strip-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 28px 4px;
+}
+.legacy-arrow {
+  display: inline-grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid #d8ba7c;
+  border-radius: 999px;
+  background: #fff0d8;
+  color: #7a2e3a;
+  cursor: pointer;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2rem;
+  font-weight: bold;
+  line-height: 1;
+  box-shadow: 0 8px 18px rgba(52, 34, 15, 0.12);
+  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+.legacy-arrow:hover {
+  background: #ffd86b;
+  box-shadow: 0 12px 24px rgba(52, 34, 15, 0.18);
+  transform: translateY(-2px);
+}
+.legacy-marquee {
+  overflow: hidden;
+  padding: 6px 0 54px;
+  scroll-behavior: smooth;
+}
+.legacy-track {
+  display: flex;
+  width: max-content;
+  gap: 18px;
+  padding: 22px 28px 28px;
+  animation: legacy-scroll 95s linear infinite;
+}
+.legacy-marquee:hover .legacy-track {
+  animation-play-state: paused;
+}
+.legacy-track figure {
+  flex: 0 0 280px;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+  transform-origin: center top;
+  transition: transform 220ms ease, z-index 220ms ease;
+}
+.legacy-track figure:hover {
+  z-index: 5;
+  transform: translateY(18px) scale(1.22);
+}
+.legacy-track img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(52, 34, 15, 0.18);
+  transition: box-shadow 220ms ease;
+}
+.legacy-track figure:hover img {
+  box-shadow: 0 24px 48px rgba(52, 34, 15, 0.28);
+}
+.legacy-track figcaption {
+  min-height: 92px;
+  padding: 10px 6px 0;
+  color: #3f2518;
+  font-size: 0.92rem;
+  font-weight: bold;
+  line-height: 1.32;
+  text-align: center;
+  text-align-last: center;
+  transition: color 220ms ease, background 220ms ease, padding 220ms ease;
+}
+.legacy-track figure:hover figcaption {
+  padding: 12px 10px 10px;
+  border-radius: 0 0 8px 8px;
+  background: rgba(255, 253, 247, 0.96);
+  color: #2d241f;
+}
+@keyframes legacy-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% + min(100vw, 1120px))); }
+}
 .schedule-doc-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -408,6 +602,15 @@ h1 {
   max-width: 520px;
   gap: 14px;
 }
+.blessing-form {
+  margin-top: 28px;
+  max-width: 720px;
+  padding: 22px;
+  border: 1px solid #f2d7a7;
+  border-radius: 8px;
+  background: #fffdf7;
+  box-shadow: 0 14px 34px rgba(52, 34, 15, 0.10);
+}
 input, select, textarea {
   width: 100%;
   padding: 11px;
@@ -415,6 +618,27 @@ input, select, textarea {
   border-radius: 8px;
   border: 1px solid #c9b898;
   font: inherit;
+}
+.consent-row {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 10px;
+  align-items: start;
+  line-height: 1.45;
+}
+.consent-row input {
+  width: auto;
+  margin-top: 4px;
+}
+.form-status {
+  min-height: 1.5em;
+  margin: 0;
+  color: #6e4a2f;
+  font-weight: bold;
+}
+.form button:disabled {
+  cursor: wait;
+  opacity: 0.68;
 }
 .chat-box {
   max-width: 700px;
@@ -478,7 +702,14 @@ footer {
   .nav-links a { display: inline-block; margin: 6px 12px 6px 0; }
   .story-card, .ceremony-card { grid-template-columns: 1fr; }
   .ceremony-grid { grid-template-columns: 1fr; }
-  .story-preview, .ceremony-art { min-height: 150px; }
+  .story-slideshow { min-height: 366px; }
+  .story-slideshow img { height: 258px; }
+  .story-slideshow figcaption { top: 270px; min-height: 84px; }
+  .legacy-copy { padding: 22px; }
+  .legacy-strip-controls { justify-content: flex-start; padding-inline: 22px; }
+  .legacy-track { padding-inline: 22px; }
+  .legacy-track figure { flex-basis: 240px; }
+  .ceremony-art { min-height: 150px; }
   .chat-input { display: grid; }
   .chat-input button { padding: 11px 16px; }
   .chat-message { max-width: 100%; }
@@ -491,6 +722,17 @@ footer {
   .nav-links a,
   .btn {
     transition: none;
+  }
+  .story-slideshow figure {
+    animation: none;
+    opacity: 0;
+  }
+  .story-slideshow figure:first-child {
+    opacity: 1;
+  }
+  .legacy-track {
+    animation: none;
+    transform: none;
   }
 }
 .guest-info-card {

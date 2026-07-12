@@ -1,8 +1,13 @@
 const companionTopics = [
   {
+    keywords: ["who", "couple", "bride", "groom", "deepali", "inderdip", "wedding", "marriage", "vivaah", "vivah"],
+    answer:
+      "This is the wedding invitation website for Deepali and Inderdip. The site carries their welcome message, RSVP, schedule, ceremony guide, memories, and the dedication to Shri Pradipkumar Shere."
+  },
+  {
     keywords: ["rsvp", "update", "coming", "attend", "attendance", "adult", "child", "children", "special request"],
     answer:
-      "You can submit or update your RSVP from the RSVP section using the same invitation link. Adult and children counts are entered by the guest during RSVP; they are not pre-filled. You can also add a special request, or leave it as Nil."
+      "You can submit or update your RSVP from the RSVP section using the same invitation link. Enter how many adults and children from your family will attend, choose Yes or No, and add any special request. If there is no request, Nil is fine."
   },
   {
     keywords: ["qr", "pass", "entry", "gate", "check in", "check-in", "scan"],
@@ -15,65 +20,86 @@ const companionTopics = [
       "If you cannot attend in person, please still submit the RSVP as not attending. You will still receive the invitation PDF, key event schedule, and livestream link, but no QR entry code will be generated."
   },
   {
-    keywords: ["live", "livestream", "youtube", "stream", "online", "watch"],
+    keywords: ["live", "livestream", "youtube", "stream", "online", "watch", "remote"],
     answer:
       "The wedding livestream will be hosted on Inderdip's personal YouTube and embedded on this website. The livestream link will also be included with the invitation details for guests who cannot attend."
   },
   {
-    keywords: ["schedule", "time", "day 1", "day 2", "sangeet", "haldi", "buddhist", "vedic", "reception", "lunch"],
+    keywords: ["schedule", "time", "day 1", "day 2", "sangeet", "haldi", "buddhist", "vedic", "reception", "lunch", "program", "event"],
     answer:
       "The schedule is divided into key event groups: Day 1 includes Sangeet, Haldi, Stories of Us, and Dinner. Day 2 includes Haldi Removal, Buddhist Wedding, Vedic Wedding, Reception, Lunch, and Farewell. The official Day 1 and Day 2 PDF schedules will be linked on the site."
   },
   {
-    keywords: ["ceremony", "ritual", "meaning", "marathi", "sanskrit", "shlok", "mantra", "guide"],
+    keywords: ["ceremony", "ritual", "meaning", "marathi", "sanskrit", "shlok", "mantra", "guide", "antarpat", "mangalashtak", "saptapadi", "phere", "buddha", "buddhist"],
     answer:
       "The Ceremony Guide will explain each event in simple language with English and Marathi titles, ritual meaning, guest participation notes, illustrations, and carefully referenced Sanskrit or traditional verses where appropriate."
   },
   {
-    keywords: ["photo", "video", "upload", "story", "stories", "memory", "remove", "delete", "consent"],
+    keywords: ["photo", "video", "upload", "story", "stories", "memory", "remove", "delete", "consent", "share"],
     answer:
-      "Guests will be able to upload selected photos or videos for Stories of Us. Uploads will require consent for screening on the website and during the event, and limits will be added to avoid misuse. Guests should be able to manage their own uploads from their invitation link."
+      "Use the Share a Memory section for two things: photos or videos go through the Google upload form, while written blessings can be submitted directly on this website. Both require consent before anything is reviewed for display on the website or during the event."
   },
   {
-    keywords: ["pradip", "smruti", "father", "book", "digital book", "late"],
+    keywords: ["blessing", "blessings", "wish", "wishes", "message", "write", "text", "ashirwad", "आशीर्वाद"],
     answer:
-      "Pradipkumar Smruti is a dedicated page for Shri Pradipkumar Shere. Before the wedding countdown completes, guests will see the tribute page introduction. The digital book will become live only after the wedding countdown."
+      "You can write a blessing directly in the Share a Memory section without Google sign-in. Family name is filled from the invitation link when available, and the message is saved for review before it is displayed anywhere."
   },
   {
-    keywords: ["invite", "invitation", "pdf", "token", "family", "personal"],
+    keywords: ["pradip", "pradipkumar", "pradeep", "shere", "father", "dedication", "dedicated", "memory", "loving memory", "late", "book", "digital book", "smruti"],
+    answer:
+      "This wedding is dedicated to Shri Pradipkumar Shere in loving memory. The section honours his life, values, dates, and family presence through a photo strip and tribute text. The wedding remains a joyful ceremony for Deepali and Inderdip, carried with his blessings."
+  },
+  {
+    keywords: ["invite", "invitation", "pdf", "token", "family", "personal", "private", "link"],
     answer:
       "Each family receives a personalized invitation link using a private invite token. The website uses that token to show the family welcome message and invitation details. A general invite link can show the default message."
   },
   {
     keywords: ["date", "countdown", "august", "3 august", "3rd august", "wedding day"],
     answer:
-      "The main countdown is for the wedding date: 3 August. The site will use this countdown to guide guests and to unlock some post-wedding content such as the digital book."
+      "The countdown is set for 3 August 2026 at 11:00 AM IST. Before the wedding it counts down to the ceremony; after that moment it changes into a count-up showing how much time has passed since the wedding began."
   }
 ];
 
 const quickPrompts = [
   "How do I update RSVP?",
   "When is the QR pass active?",
-  "Where can I watch livestream?",
-  "What is on Day 2?"
+  "How do I share blessings?",
+  "Tell me about the dedication"
+];
+
+const companionFallbacks = [
+  "I can help with RSVP, QR entry pass, livestream, schedule, ceremony meanings, uploads, written blessings, invite links, and the dedication to Shri Pradipkumar Shere.",
+  "Try asking: How do I RSVP? Where do I upload photos? How do I write blessings? What happens on Day 2? Why is the wedding dedicated to Shri Pradipkumar Shere?",
+  "I may not know every detail yet, but I can guide guests through the main website sections: invitation, RSVP, schedule, ceremony guide, memories, livestream, and dedication."
 ];
 
 function normalizeQuestion(text) {
   return text.toLowerCase().replace(/[^a-z0-9\s-]/g, " ").replace(/\s+/g, " ").trim();
 }
 
+function getQuestionTokens(text) {
+  return normalizeQuestion(text)
+    .split(" ")
+    .filter(token => token.length > 2);
+}
+
 function findCompanionAnswer(question) {
   const normalized = normalizeQuestion(question);
 
   if (!normalized) {
-    return "Ask me about RSVP, QR entry pass, livestream, schedule, ceremony meanings, uploads, or Pradipkumar Smruti.";
+    return companionFallbacks[0];
   }
 
+  const tokens = getQuestionTokens(question);
   const scoredTopics = companionTopics
     .map(topic => ({
       topic,
       score: topic.keywords.reduce((count, keyword) => {
-        return normalized.includes(keyword) ? count + 1 : count;
+        const normalizedKeyword = normalizeQuestion(keyword);
+        if (normalized.includes(normalizedKeyword)) return count + 3;
+        if (tokens.some(token => normalizedKeyword.includes(token) || token.includes(normalizedKeyword))) return count + 1;
+        return count;
       }, 0)
     }))
     .sort((a, b) => b.score - a.score);
@@ -82,7 +108,15 @@ function findCompanionAnswer(question) {
     return scoredTopics[0].topic.answer;
   }
 
-  return "I am still learning this answer. For now, please check the RSVP, Schedule, Ceremony Guide, and Share a Memory sections, or ask about QR pass, livestream, uploads, or event timings.";
+  return companionFallbacks[getStableCompanionIndex(normalized, companionFallbacks.length)];
+}
+
+function getStableCompanionIndex(seed, count) {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 33 + seed.charCodeAt(i)) >>> 0;
+  }
+  return hash % count;
 }
 
 function addChatMessage(type, message) {
@@ -130,7 +164,7 @@ function loadCompanionPrompts() {
   });
 
   chatLog.appendChild(promptRow);
-  addChatMessage("assistant", "Namaskar. I can help with RSVP, QR entry pass, livestream, schedule, ceremony guide, uploads, and Pradipkumar Smruti.");
+  addChatMessage("assistant", "Namaskar. I can help with RSVP, QR entry pass, livestream, schedule, ceremony guide, uploads, written blessings, and the dedication to Shri Pradipkumar Shere.");
 
   input.addEventListener("keydown", event => {
     if (event.key === "Enter") {
@@ -163,6 +197,24 @@ function loadHeroParallax() {
   }, { passive: true });
 
   updateParallax();
+}
+
+function moveLegacyStrip(direction) {
+  const marquee = document.getElementById("legacyMarquee");
+  const track = marquee ? marquee.querySelector(".legacy-track") : null;
+  if (!marquee || !track) return;
+
+  track.style.animationPlayState = "paused";
+  const step = Math.min(360, Math.max(240, marquee.clientWidth * 0.42));
+  marquee.scrollBy({
+    left: direction * step,
+    behavior: "smooth"
+  });
+
+  window.clearTimeout(moveLegacyStrip.resumeTimer);
+  moveLegacyStrip.resumeTimer = window.setTimeout(() => {
+    track.style.animationPlayState = "";
+  }, 1800);
 }
 
 document.addEventListener("DOMContentLoaded", loadCompanionPrompts);
