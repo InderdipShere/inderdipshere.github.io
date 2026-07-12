@@ -243,7 +243,7 @@
       <p>
         Submit or update your RSVP using the same invitation link. Adult and children counts are entered here by the guest.
       </p>
-      <form id="rsvpForm" class="form" onsubmit="event.preventDefault(); alert('RSVP workflow will connect to Google Apps Script next.');">
+      <form id="rsvpForm" class="form">
         <label>Family Name <input id="rsvpFamilyName" type="text" placeholder="Example: Patil Family"></label>
         <label>Adults <input id="rsvpAdults" type="number" min="0" placeholder="0"></label>
         <label>Children <input id="rsvpChildren" type="number" min="0" placeholder="0"></label>
@@ -256,6 +256,7 @@
         </label>
         <label>Special Request <textarea id="rsvpSpecialRequest" rows="3" placeholder="Nil"></textarea></label>
         <button class="btn primary" type="submit">Submit RSVP</button>
+        <p id="rsvpStatus" class="form-status" aria-live="polite"></p>
       </form>
     </section>
 

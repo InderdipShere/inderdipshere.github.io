@@ -259,14 +259,108 @@ async function submitBlessing(event) {
 
 function prefillRsvpForm(guest) {
   const familyNameInput = document.getElementById("rsvpFamilyName");
+  const adultsInput = document.getElementById("rsvpAdults");
+  const childrenInput = document.getElementById("rsvpChildren");
   const attendanceInput = document.getElementById("rsvpAttendance");
   const specialRequestInput = document.getElementById("rsvpSpecialRequest");
 
   if (!familyNameInput || !attendanceInput || !specialRequestInput) return;
 
   familyNameInput.value = guest ? guest.familyName : "";
+  if (adultsInput && guest && isRsvpConfirmed(guest)) adultsInput.value = guest.adults || "";
+  if (childrenInput && guest && isRsvpConfirmed(guest)) childrenInput.value = guest.children || "";
   attendanceInput.value = guest ? guest.rsvp || "Pending" : "Pending";
   specialRequestInput.value = guest ? guest.specialRequest || "Nil" : "Nil";
+}
+
+function getRsvpPayload() {
+  const familyName = document.getElementById("rsvpFamilyName");
+  const adults = document.getElementById("rsvpAdults");
+  const children = document.getElementById("rsvpChildren");
+  const attendance = document.getElementById("rsvpAttendance");
+  const specialRequest = document.getElementById("rsvpSpecialRequest");
+
+  return {
+    action: "rsvp",
+    invite: currentGuest ? currentGuest.inviteToken : getInviteToken(),
+    familyName: familyName ? familyName.value.trim() : "",
+    adults: adults ? Number(adults.value || 0) : 0,
+    children: children ? Number(children.value || 0) : 0,
+    rsvp: attendance ? attendance.value : "Pending",
+    specialRequest: specialRequest ? specialRequest.value.trim() || "Nil" : "Nil"
+  };
+}
+
+function applyLocalRsvpState(payload) {
+  if (!currentGuest) return;
+
+  currentGuest.familyName = payload.familyName || currentGuest.familyName;
+  currentGuest.adults = payload.rsvp === "Yes" ? payload.adults : 0;
+  currentGuest.children = payload.rsvp === "Yes" ? payload.children : 0;
+  currentGuest.total = payload.rsvp === "Yes" ? payload.adults + payload.children : 0;
+  currentGuest.rsvp = payload.rsvp;
+  currentGuest.specialRequest = payload.specialRequest;
+  currentGuest.qrGenerated = payload.rsvp === "Yes" ? "Yes" : "No";
+  guests[currentGuest.inviteToken] = currentGuest;
+  loadGuest();
+}
+
+function delay(milliseconds) {
+  return new Promise(resolve => window.setTimeout(resolve, milliseconds));
+}
+
+async function submitRsvp(event) {
+  event.preventDefault();
+
+  const form = document.getElementById("rsvpForm");
+  const status = document.getElementById("rsvpStatus");
+  const submitButton = form ? form.querySelector("button[type='submit']") : null;
+  const payload = getRsvpPayload();
+
+  if (!payload.invite) {
+    if (status) status.textContent = "Please open your private family invitation link before submitting RSVP.";
+    return;
+  }
+
+  if (payload.rsvp === "Yes" && payload.adults + payload.children <= 0) {
+    if (status) status.textContent = "Please enter at least one adult or child attending.";
+    return;
+  }
+
+  if (submitButton) submitButton.disabled = true;
+  if (status) status.textContent = "Submitting RSVP...";
+
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    applyLocalRsvpState(payload);
+    if (status) {
+      status.textContent = "RSVP submitted. Refreshing invitation details...";
+    }
+
+    await delay(1800);
+    await loadDataFromGoogleSheets();
+
+    if (status) {
+      status.textContent = payload.rsvp === "Yes"
+        ? "RSVP confirmed. Your QR entry token will be prepared from this response."
+        : "RSVP updated. Invitation and livestream details remain available.";
+    }
+  } catch (error) {
+    console.error("RSVP submission failed:", error);
+    if (status) {
+      status.textContent = "We could not submit RSVP right now. Please try again in a moment.";
+    }
+  } finally {
+    if (submitButton) submitButton.disabled = false;
+  }
 }
 
 function updateInviteStatus(rsvpStatus, qrGenerated) {
@@ -509,5 +603,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const blessingForm = document.getElementById("blessingForm");
   if (blessingForm) {
     blessingForm.addEventListener("submit", submitBlessing);
+  }
+  const rsvpForm = document.getElementById("rsvpForm");
+  if (rsvpForm) {
+    rsvpForm.addEventListener("submit", submitRsvp);
   }
 });
