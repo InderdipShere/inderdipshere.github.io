@@ -81,7 +81,7 @@ function getStableMessageIndex(seed, count) {
 }
 
 function isRsvpConfirmed(guest) {
-  return String(guest.rsvp || "").trim().toLowerCase() === "yes";
+  return ["yes", "done", "confirmed"].includes(String(guest.rsvp || "").trim().toLowerCase());
 }
 
 function buildGuestInfo(guest, rsvpStatus) {
@@ -273,7 +273,14 @@ function prefillRsvpForm(guest) {
   familyNameInput.value = guest ? guest.familyName : "";
   if (adultsInput && guest && isRsvpConfirmed(guest)) adultsInput.value = guest.adults || "";
   if (childrenInput && guest && isRsvpConfirmed(guest)) childrenInput.value = guest.children || "";
-  attendanceInput.value = guest ? guest.rsvp || "Pending" : "Pending";
+  const rsvpValue = guest ? String(guest.rsvp || "Pending").trim().toLowerCase() : "pending";
+  if (rsvpValue === "done" || rsvpValue === "yes" || rsvpValue === "confirmed") {
+    attendanceInput.value = "Yes";
+  } else if (rsvpValue === "issue" || rsvpValue === "no" || rsvpValue === "declined") {
+    attendanceInput.value = "No";
+  } else {
+    attendanceInput.value = "Pending";
+  }
   specialRequestInput.value = guest ? guest.specialRequest || "Nil" : "Nil";
 }
 
@@ -377,13 +384,13 @@ function updateInviteStatus(rsvpStatus, qrGenerated) {
   let message = "RSVP not completed. Invitation pass is not active.";
   let className = "status-banner pending";
 
-  if (normalizedStatus === "yes" && hasQr) {
+  if ((normalizedStatus === "yes" || normalizedStatus === "done") && hasQr) {
     message = "RSVP confirmed. Your family QR entry pass is active.";
     className = "status-banner active";
-  } else if (normalizedStatus === "yes") {
+  } else if (normalizedStatus === "yes" || normalizedStatus === "done") {
     message = "RSVP confirmed. Your QR entry pass will appear after it is generated.";
     className = "status-banner active";
-  } else if (normalizedStatus === "no") {
+  } else if (normalizedStatus === "no" || normalizedStatus === "issue") {
     message = "RSVP marked as not attending. Invitation PDF and livestream link remain available without QR entry code.";
     className = "status-banner inactive";
   } else if (normalizedStatus === "general") {
