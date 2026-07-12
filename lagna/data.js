@@ -1,5 +1,5 @@
 // Google Apps Script Endpoint - using existing script
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJe2s4BnRy_xwcq0yAA5lt1EIFTpmPBiQAWmHcqBKMB1dkJ0hSM-04ZxkmgwbYY__P/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFTHa53ENMn0udXLJ1O7IqqgkxJ4cTEHNZFm8wkpu91gHT-s3Ud7uBzqfCW4qd_gPb/exec";
 const MEMORY_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSffYrjmvpLm2veXg0g-jJiDtYkSKfApiVu3wTGmI3O3zZLyEQ/viewform";
 const MEMORY_FORM_FAMILY_ENTRY = "entry.1000733018";
 const MEMORY_FORM_INVITE_ENTRY = "entry.1330643432";
