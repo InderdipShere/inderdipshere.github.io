@@ -82,6 +82,7 @@ function saveBlessing(body) {
 
 function updateRsvp(body) {
   const inviteToken = String(body.invite || "").trim();
+  const familyName = String(body.familyName || "").trim();
   const rsvp = normalizeRsvp(body.rsvp);
   const adults = Math.max(0, Number(body.adults || 0));
   const children = Math.max(0, Number(body.children || 0));
@@ -105,6 +106,9 @@ function updateRsvp(body) {
   }
 
   const rowNumber = rowIndex + 2;
+  if (familyName) {
+    setCell(sheet, table.headers, rowNumber, "Family Name", familyName);
+  }
   setCell(sheet, table.headers, rowNumber, "RSVP", rsvp);
   setCell(sheet, table.headers, rowNumber, "Adults", rsvp === "Yes" ? adults : 0);
   setCell(sheet, table.headers, rowNumber, "Children", rsvp === "Yes" ? children : 0);
@@ -114,7 +118,7 @@ function updateRsvp(body) {
   let checkinToken = table.records[rowIndex]["Check-in Token"];
   if (rsvp === "Yes") {
     if (!checkinToken) {
-      checkinToken = makeToken("CHK");
+      checkinToken = makeUniqueToken("CHK", getExistingTokenSet(table.records, "Check-in Token"));
       setCell(sheet, table.headers, rowNumber, "Check-in Token", checkinToken);
     }
     setCell(sheet, table.headers, rowNumber, "QR Generated", "Yes");
@@ -155,19 +159,79 @@ function markCheckedIn(body) {
 function generateMissingTokens() {
   const sheet = getGuestSheet();
   const table = readTable(sheet);
+  const usedInviteTokens = getExistingTokenSet(table.records, "Invite Token");
+  const usedCheckinTokens = getExistingTokenSet(table.records, "Check-in Token");
 
   table.records.forEach((record, index) => {
     const rowNumber = index + 2;
 
     if (record["Family ID"] && !record["Invite Token"]) {
-      setCell(sheet, table.headers, rowNumber, "Invite Token", makeToken("INV"));
+      setCell(sheet, table.headers, rowNumber, "Invite Token", makeUniqueToken("INV", usedInviteTokens));
     }
 
     if (String(record["RSVP"]).trim() === "Yes" && !record["Check-in Token"]) {
-      setCell(sheet, table.headers, rowNumber, "Check-in Token", makeToken("CHK"));
+      setCell(sheet, table.headers, rowNumber, "Check-in Token", makeUniqueToken("CHK", usedCheckinTokens));
       setCell(sheet, table.headers, rowNumber, "QR Generated", "Yes");
     }
   });
+}
+
+function auditInviteTokens() {
+  const table = readTable(getGuestSheet());
+  const seen = {};
+  const duplicates = [];
+  let missing = 0;
+
+  table.records.forEach(record => {
+    const familyId = String(record["Family ID"] || "").trim();
+    const token = String(record["Invite Token"] || "").trim();
+    if (!familyId) return;
+    if (!token) {
+      missing++;
+      return;
+    }
+    if (seen[token]) {
+      duplicates.push(token);
+    }
+    seen[token] = true;
+  });
+
+  Logger.log({
+    totalFamilies: table.records.filter(record => String(record["Family ID"] || "").trim()).length,
+    missingInviteTokens: missing,
+    duplicateInviteTokens: duplicates
+  });
+}
+
+function regenerateAllInviteTokensBeforeSending() {
+  const sheet = getGuestSheet();
+  const table = readTable(sheet);
+  const usedInviteTokens = {};
+
+  table.records.forEach((record, index) => {
+    if (!record["Family ID"]) return;
+    const rowNumber = index + 2;
+    setCell(sheet, table.headers, rowNumber, "Invite Token", makeUniqueToken("INV", usedInviteTokens));
+    setCell(sheet, table.headers, rowNumber, "Check-in Token", "");
+    setCell(sheet, table.headers, rowNumber, "QR Generated", "No");
+    setCell(sheet, table.headers, rowNumber, "RSVP", "Pending");
+    setCell(sheet, table.headers, rowNumber, "Adults", 0);
+    setCell(sheet, table.headers, rowNumber, "Children", 0);
+    setCell(sheet, table.headers, rowNumber, "Total", 0);
+    setCell(sheet, table.headers, rowNumber, "Invitation PDF link", "");
+  });
+}
+
+function testDeploymentWrite() {
+  const sheet = getGuestSheet();
+  const table = readTable(sheet);
+  const testColName = "Special Request";
+  const firstDataRow = 2;
+  const existingValue = table.records[0] ? table.records[0][testColName] : "";
+
+  setCell(sheet, table.headers, firstDataRow, testColName, "Deployment test " + new Date().toISOString());
+  SpreadsheetApp.flush();
+  setCell(sheet, table.headers, firstDataRow, testColName, existingValue || "Nil");
 }
 
 function getGuestSheet() {
@@ -224,6 +288,15 @@ function setCell(sheet, headers, rowNumber, headerName, value) {
   sheet.getRange(rowNumber, colIndex + 1).setValue(value);
 }
 
+function getExistingTokenSet(records, fieldName) {
+  const used = {};
+  records.forEach(record => {
+    const token = String(record[fieldName] || "").trim();
+    if (token) used[token] = true;
+  });
+  return used;
+}
+
 function parseBody(e) {
   if (e.postData && e.postData.contents) {
     try {
@@ -244,6 +317,15 @@ function normalizeRsvp(value) {
 
 function makeToken(prefix) {
   return prefix + "-" + Utilities.getUuid().replace(/-/g, "").substring(0, 16);
+}
+
+function makeUniqueToken(prefix, usedTokens) {
+  let token = makeToken(prefix);
+  while (usedTokens[token]) {
+    token = makeToken(prefix);
+  }
+  usedTokens[token] = true;
+  return token;
 }
 
 function jsonOutput(payload) {
