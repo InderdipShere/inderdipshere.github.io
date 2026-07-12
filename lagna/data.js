@@ -109,8 +109,12 @@ async function loadDataFromGoogleSheets() {
   loadCeremonies();
 
   try {
-    const query = inviteToken ? `?invite=${encodeURIComponent(inviteToken)}` : "";
-    const guestResponse = await fetch(`${GOOGLE_SCRIPT_URL}${query}`);
+    const params = new URLSearchParams();
+    if (inviteToken) params.set("invite", inviteToken);
+    params.set("_", Date.now());
+    const guestResponse = await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`, {
+      cache: "no-store"
+    });
     const guestData = await guestResponse.json();
     
     if (guestData.success && guestData.guest) {
