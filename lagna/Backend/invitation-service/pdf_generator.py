@@ -11,9 +11,14 @@ from reportlab.pdfgen import canvas
 
 BASE_DIR = Path(__file__).resolve().parent
 ASSET_DIR = BASE_DIR / "assets"
-FIXED_PDF = ASSET_DIR / "Invitation_fixed.pdf"
-TEMPLATE_PDF = ASSET_DIR / "Invitation_template.pdf"
+FIXED_PDF = ASSET_DIR / "Invitation_fixed_optimized.pdf"
+TEMPLATE_PDF = ASSET_DIR / "Invitation_template_optimized.pdf"
 MM = 72 / 25.4
+QR_BOX_SIZE = 34 * MM
+# Measured from the QR-free page-4 template. The changemargin environment
+# shifts the centered TikZ frame slightly right of the physical page center.
+QR_BOX_X = 254.33
+QR_BOX_Y = 132.72
 
 
 def make_qr_image(data):
@@ -32,20 +37,25 @@ def build_overlay(qr_data, family_name, total_guests):
     packet = BytesIO()
     c = canvas.Canvas(packet, pagesize=A4)
     page_width, _ = A4
-
-    box_size = 34 * MM
-    box_x = (page_width - box_size) / 2 + 5
-    box_y = 139.0-6
+    box_x = QR_BOX_X
+    box_y = QR_BOX_Y
 
     c.setFillColor(HexColor("#FFF8E7"))
-    c.rect(box_x + 4, box_y + 4, box_size - 8, box_size - 8, fill=1, stroke=0)
+    c.rect(
+        box_x + (2.6 * MM),
+        box_y + (2.6 * MM),
+        QR_BOX_SIZE - (5.2 * MM),
+        QR_BOX_SIZE - (5.2 * MM),
+        fill=1,
+        stroke=0,
+    )
 
     qr_image = make_qr_image(qr_data)
     qr_size = 25 * MM
     c.drawImage(
         ImageReader(qr_image),
-        box_x + (19 * MM) - (qr_size / 2),
-        box_y + (19 * MM) - (qr_size / 2),
+        box_x + (17 * MM) - (qr_size / 2),
+        box_y + (18 * MM) - (qr_size / 2),
         width=qr_size,
         height=qr_size,
         mask="auto",
@@ -57,7 +67,7 @@ def build_overlay(qr_data, family_name, total_guests):
 
     c.setFillColor(HexColor("#005F73"))
     c.setFont("Helvetica", 5.6)
-    c.drawCentredString(page_width / 2 , box_y + (4 * MM), label[:58])
+    c.drawCentredString(box_x + (17 * MM), box_y + (4 * MM), label[:58])
     c.save()
     packet.seek(0)
     return PdfReader(packet).pages[0]
