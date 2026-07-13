@@ -110,11 +110,25 @@ function getInvitationPdfUrl(guest) {
   return `${INVITATION_SERVICE_URL.replace(/\/$/, "")}/invitation/${encodeURIComponent(guest.inviteToken)}.pdf`;
 }
 
+function getRichInvitationPdfUrl(guest) {
+  if (!INVITATION_SERVICE_URL || !guest || !guest.inviteToken) return "";
+  return `${INVITATION_SERVICE_URL.replace(/\/$/, "")}/invitation-rich/${encodeURIComponent(guest.inviteToken)}.pdf`;
+}
+
+function pingInvitationService() {
+  if (!INVITATION_SERVICE_URL || Date.now() > WEDDING_DATE.getTime()) return;
+  fetch(`${INVITATION_SERVICE_URL.replace(/\/$/, "")}/health`, {
+    cache: "no-store",
+    mode: "no-cors"
+  }).catch(() => {});
+}
+
 function renderInvitationDownloadPanel(guest, statusMessage = "") {
   const panel = document.getElementById("invitationDownloadPanel");
   if (!panel) return;
 
   const invitationUrl = guest && isRsvpConfirmed(guest) ? getInvitationPdfUrl(guest) : "";
+  const richInvitationUrl = guest && isRsvpConfirmed(guest) ? getRichInvitationPdfUrl(guest) : "";
   if (!invitationUrl) {
     panel.hidden = true;
     panel.innerHTML = "";
@@ -130,12 +144,12 @@ function renderInvitationDownloadPanel(guest, statusMessage = "") {
       </div>
       <a class="btn primary" href="${escapeHtml(invitationUrl)}" target="_blank" rel="noopener">Open Quick PDF</a>
     </div>
-    <div class="download-card muted" aria-disabled="true">
+    <div class="download-card rich">
       <div>
         <strong>Rich quality PDF</strong>
-        <p>Large artistic version, around 20 MB. This will be enabled after the rich PDF backend is added.</p>
+        <p>Large artistic version, around 20 MB. It may take about two minutes to open or download.</p>
       </div>
-      <span class="btn disabled">Coming Soon</span>
+      <a class="btn secondary rich-download" href="${escapeHtml(richInvitationUrl)}" target="_blank" rel="noopener">Open Rich PDF</a>
     </div>
   `;
 }
@@ -660,6 +674,8 @@ function loadDefaultEventData() {
 document.addEventListener("DOMContentLoaded", () => {
   loadCountdown();
   setInterval(loadCountdown, 1000);
+  pingInvitationService();
+  setInterval(pingInvitationService, 10 * 60 * 1000);
   loadDataFromGoogleSheets();
   const blessingForm = document.getElementById("blessingForm");
   if (blessingForm) {
