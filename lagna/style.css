@@ -662,8 +662,14 @@ input, select, textarea {
 .download-card.quick {
   border-color: rgba(0, 95, 115, 0.34);
 }
+.download-card.rich {
+  border-color: rgba(122, 46, 58, 0.28);
+}
 .download-card.muted {
   opacity: 0.72;
+}
+.rich-download {
+  color: #7a2e3a;
 }
 .btn.disabled {
   background: #d7c9b6;
