@@ -38,14 +38,14 @@ def build_overlay(qr_data, family_name, total_guests):
     box_y = 139.0-6
 
     c.setFillColor(HexColor("#FFF8E7"))
-    c.rect(box_x + 4+5, box_y + 4-6, box_size - 8, box_size - 8, fill=1, stroke=0)
+    c.rect(box_x + 4+1, box_y + 4-4, box_size - 8, box_size - 8, fill=1, stroke=0)
 
     qr_image = make_qr_image(qr_data)
     qr_size = 25 * MM
     c.drawImage(
         ImageReader(qr_image),
-        box_x + (19 * MM) - (qr_size / 2)+5,
-        box_y + (19 * MM) - (qr_size / 2)-6,
+        box_x + (19 * MM) - (qr_size / 2)+1,
+        box_y + (19 * MM) - (qr_size / 2)-4,
         width=qr_size,
         height=qr_size,
         mask="auto",
@@ -57,7 +57,7 @@ def build_overlay(qr_data, family_name, total_guests):
 
     c.setFillColor(HexColor("#005F73"))
     c.setFont("Helvetica", 5.6)
-    c.drawCentredString(page_width / 2 +4 , box_y + (4 * MM)-10, label[:58])
+    c.drawCentredString(page_width / 2+4 , box_y + (4 * MM)-8, label[:58])
     c.save()
     packet.seek(0)
     return PdfReader(packet).pages[0]
