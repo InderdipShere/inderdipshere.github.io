@@ -3,7 +3,7 @@ from pathlib import Path
 
 import qrcode
 from pypdf import PdfReader, PdfWriter
-from reportlab.lib.colors import HexColor, white
+from reportlab.lib.colors import HexColor
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
@@ -48,23 +48,6 @@ def draw_favicon_mark(c, center_x, center_y):
         (-petal_distance * 0.72, -petal_distance * 0.72),
     ):
         c.circle(center_x + dx, center_y + dy, petal_radius, fill=1, stroke=0)
-
-    c.setFillColor(HexColor("#fff8e8"))
-    c.setFont("Times-BoldItalic", 30)
-    c.drawCentredString(center_x, center_y - (3.5 * MM), "&")
-
-    c.setFillColor(HexColor("#ff8aa0"))
-    heart_x = center_x + (7.2 * MM)
-    heart_y = center_y - (4.0 * MM)
-    heart_size = 2.1 * MM
-    c.circle(heart_x - heart_size * 0.45, heart_y + heart_size * 0.35, heart_size * 0.55, fill=1, stroke=0)
-    c.circle(heart_x + heart_size * 0.45, heart_y + heart_size * 0.35, heart_size * 0.55, fill=1, stroke=0)
-    heart = c.beginPath()
-    heart.moveTo(heart_x - heart_size * 1.1, heart_y + heart_size * 0.25)
-    heart.lineTo(heart_x + heart_size * 1.1, heart_y + heart_size * 0.25)
-    heart.lineTo(heart_x, heart_y - heart_size * 1.15)
-    heart.close()
-    c.drawPath(heart, fill=1, stroke=0)
 
 
 def make_qr_image(data):
