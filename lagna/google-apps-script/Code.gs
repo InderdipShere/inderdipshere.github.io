@@ -2,10 +2,21 @@ const SHEET_NAME = "Guest Master List";
 const BLESSINGS_SHEET_NAME = "Blessings";
 
 function doGet(e) {
+  const health = String(e.parameter.health || "").trim();
   const inviteToken = String(e.parameter.invite || "").trim();
   const checkinToken = String(e.parameter.checkin || "").trim();
   const sheet = getGuestSheet();
   const records = readRecords(sheet);
+
+  if (health) {
+    return jsonOutput({
+      success: true,
+      version: "lagna-rsvp-v2",
+      sheetName: SHEET_NAME,
+      guestCount: records.length,
+      timestamp: new Date().toISOString()
+    });
+  }
 
   if (inviteToken) {
     const guest = records.find(row => String(row["Invite Token"]).trim() === inviteToken);
@@ -93,7 +104,7 @@ function updateRsvp(body) {
     return jsonOutput({ success: false, error: "Missing invite token" });
   }
 
-  if (!["Pending", "Yes", "No"].includes(rsvp)) {
+  if (!["Pending", "Done", "Issue"].includes(rsvp)) {
     return jsonOutput({ success: false, error: "Invalid RSVP value" });
   }
 
@@ -110,13 +121,13 @@ function updateRsvp(body) {
     setCell(sheet, table.headers, rowNumber, "Family Name", familyName);
   }
   setCell(sheet, table.headers, rowNumber, "RSVP", rsvp);
-  setCell(sheet, table.headers, rowNumber, "Adults", rsvp === "Yes" ? adults : 0);
-  setCell(sheet, table.headers, rowNumber, "Children", rsvp === "Yes" ? children : 0);
-  setCell(sheet, table.headers, rowNumber, "Total", rsvp === "Yes" ? total : 0);
+  setCell(sheet, table.headers, rowNumber, "Adults", rsvp === "Done" ? adults : 0);
+  setCell(sheet, table.headers, rowNumber, "Children", rsvp === "Done" ? children : 0);
+  setCell(sheet, table.headers, rowNumber, "Total", rsvp === "Done" ? total : 0);
   setCell(sheet, table.headers, rowNumber, "Special Request", specialRequest);
 
   let checkinToken = table.records[rowIndex]["Check-in Token"];
-  if (rsvp === "Yes") {
+  if (rsvp === "Done") {
     if (!checkinToken) {
       checkinToken = makeUniqueToken("CHK", getExistingTokenSet(table.records, "Check-in Token"));
       setCell(sheet, table.headers, rowNumber, "Check-in Token", checkinToken);
@@ -169,7 +180,7 @@ function generateMissingTokens() {
       setCell(sheet, table.headers, rowNumber, "Invite Token", makeUniqueToken("INV", usedInviteTokens));
     }
 
-    if (String(record["RSVP"]).trim() === "Yes" && !record["Check-in Token"]) {
+    if (String(record["RSVP"]).trim() === "Done" && !record["Check-in Token"]) {
       setCell(sheet, table.headers, rowNumber, "Check-in Token", makeUniqueToken("CHK", usedCheckinTokens));
       setCell(sheet, table.headers, rowNumber, "QR Generated", "Yes");
     }
@@ -310,8 +321,8 @@ function parseBody(e) {
 
 function normalizeRsvp(value) {
   const raw = String(value || "Pending").trim().toLowerCase();
-  if (raw === "yes" || raw === "confirmed") return "Yes";
-  if (raw === "no" || raw === "declined") return "No";
+  if (raw === "yes" || raw === "done" || raw === "confirmed") return "Done";
+  if (raw === "no" || raw === "issue" || raw === "declined") return "Issue";
   return "Pending";
 }
 
