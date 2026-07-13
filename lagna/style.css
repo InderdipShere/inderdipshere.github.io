@@ -636,6 +636,41 @@ input, select, textarea {
   color: #6e4a2f;
   font-weight: bold;
 }
+.invitation-download-panel {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+}
+.invitation-download-panel[hidden] {
+  display: none;
+}
+.download-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(194, 133, 58, 0.32);
+  background: rgba(255, 250, 238, 0.82);
+  box-shadow: 0 10px 26px rgba(52, 34, 15, 0.08);
+}
+.download-card p {
+  margin: 4px 0 0;
+  text-align: justify;
+}
+.download-card.quick {
+  border-color: rgba(0, 95, 115, 0.34);
+}
+.download-card.muted {
+  opacity: 0.72;
+}
+.btn.disabled {
+  background: #d7c9b6;
+  color: #6e604e;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 .form button:disabled {
   cursor: wait;
   opacity: 0.68;
@@ -742,4 +777,12 @@ footer {
   background: rgba(255,255,255,0.18);
   border: 1px solid rgba(255,255,255,0.30);
   line-height: 1.8;
+}
+.guest-card-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: #ffd86b;
+  font-weight: bold;
+  text-decoration: none;
+  border-bottom: 2px solid currentColor;
 }

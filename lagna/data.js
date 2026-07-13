@@ -1,5 +1,6 @@
 // Google Apps Script Endpoint - using existing script
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFTHa53ENMn0udXLJ1O7IqqgkxJ4cTEHNZFm8wkpu91gHT-s3Ud7uBzqfCW4qd_gPb/exec";
+const INVITATION_SERVICE_URL = "https://lagna-invitation-service.onrender.com";
 const MEMORY_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSffYrjmvpLm2veXg0g-jJiDtYkSKfApiVu3wTGmI3O3zZLyEQ/viewform";
 const MEMORY_FORM_FAMILY_ENTRY = "entry.1000733018";
 const MEMORY_FORM_INVITE_ENTRY = "entry.1330643432";
@@ -55,6 +56,7 @@ function buildGuestRecord(g) {
     qrGenerated: g["QR Generated"] || "No",
     inviteToken,
     checkinToken: g["Check-in Token"],
+    invitationPdfLink: g["Invitation PDF link"],
     specialRequest: g["Special Request"] || "Nil",
     welcome: buildWelcomeMessage(familyName, inviteToken)
   };
@@ -93,9 +95,49 @@ function buildGuestInfo(guest, rsvpStatus) {
 
   if (isRsvpConfirmed(guest)) {
     rows.splice(2, 0, `<strong>Confirmed Guests:</strong> ${escapeHtml(guest.total || 0)}`);
+    const invitationUrl = getInvitationPdfUrl(guest);
+    if (invitationUrl) {
+      rows.push(`<a class="guest-card-link" href="${escapeHtml(invitationUrl)}" target="_blank" rel="noopener">View Invitation PDF</a>`);
+    }
   }
 
   return rows.join("<br>");
+}
+
+function getInvitationPdfUrl(guest) {
+  if (guest.invitationPdfLink) return guest.invitationPdfLink;
+  if (!INVITATION_SERVICE_URL || !guest.inviteToken) return "";
+  return `${INVITATION_SERVICE_URL.replace(/\/$/, "")}/invitation/${encodeURIComponent(guest.inviteToken)}.pdf`;
+}
+
+function renderInvitationDownloadPanel(guest, statusMessage = "") {
+  const panel = document.getElementById("invitationDownloadPanel");
+  if (!panel) return;
+
+  const invitationUrl = guest && isRsvpConfirmed(guest) ? getInvitationPdfUrl(guest) : "";
+  if (!invitationUrl) {
+    panel.hidden = true;
+    panel.innerHTML = "";
+    return;
+  }
+
+  panel.hidden = false;
+  panel.innerHTML = `
+    <div class="download-card quick">
+      <div>
+        <strong>Invitation PDF is ready</strong>
+        <p>${escapeHtml(statusMessage || "Your personalized QR invitation opens as a quick, optimized PDF.")}</p>
+      </div>
+      <a class="btn primary" href="${escapeHtml(invitationUrl)}" target="_blank" rel="noopener">Open Quick PDF</a>
+    </div>
+    <div class="download-card muted" aria-disabled="true">
+      <div>
+        <strong>Rich quality PDF</strong>
+        <p>Large artistic version, around 20 MB. This will be enabled after the rich PDF backend is added.</p>
+      </div>
+      <span class="btn disabled">Coming Soon</span>
+    </div>
+  `;
 }
 
 // Fetch data from Google Apps Script
@@ -159,6 +201,7 @@ function loadGuest() {
     updateInviteStatus(rsvpStatus, guest.qrGenerated);
     prefillRsvpForm(guest);
     updateMemoryLinks(guest);
+    renderInvitationDownloadPanel(guest);
   } else if (inviteToken) {
     box.innerHTML = `
       <p>This private invitation link is active, but guest details could not be loaded yet.</p>
@@ -170,6 +213,7 @@ function loadGuest() {
     updateInviteStatus("Pending", "No");
     prefillRsvpForm(null);
     updateMemoryLinks(null);
+    renderInvitationDownloadPanel(null);
   } else {
     box.innerHTML = `
       <p>Welcome, dear family and friends. Your presence means a lot to us.</p>
@@ -180,6 +224,7 @@ function loadGuest() {
     updateInviteStatus("General", "No");
     prefillRsvpForm(null);
     updateMemoryLinks(null);
+    renderInvitationDownloadPanel(null);
   }
 }
 
@@ -361,8 +406,13 @@ async function submitRsvp(event) {
 
     if (status) {
       status.textContent = payload.rsvp === "Yes"
-        ? "RSVP confirmed. Your QR entry token will be prepared from this response."
+        ? "RSVP confirmed. Your personalized invitation PDF is ready below."
         : "RSVP updated. Invitation and livestream details remain available.";
+    }
+    if (payload.rsvp === "Yes") {
+      renderInvitationDownloadPanel(currentGuest, "Your QR entry code is included on page 4. Open or download the PDF before coming to the venue.");
+    } else {
+      renderInvitationDownloadPanel(null);
     }
   } catch (error) {
     console.error("RSVP submission failed:", error);
