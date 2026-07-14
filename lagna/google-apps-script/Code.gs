@@ -1,10 +1,21 @@
 const SHEET_NAME = "Guest Master List";
 const BLESSINGS_SHEET_NAME = "Blessings";
+const SENDER_PIN_PROPERTY = "INVITATION_SENDER_PIN";
+const INVITATION_SITE_URL = "https://inderdipshere.github.io/lagna/";
+const SENDER_HEADERS = [
+  "Invitation Send Status",
+  "Video Sent",
+  "Link Sent",
+  "Invitation Sent By",
+  "Invitation Sent At",
+  "Invitation Send Notes"
+];
 
 function doGet(e) {
   const health = String(e.parameter.health || "").trim();
   const inviteToken = String(e.parameter.invite || "").trim();
   const checkinToken = String(e.parameter.checkin || "").trim();
+  const senderAction = String(e.parameter.sender || "").trim();
   const sheet = getGuestSheet();
   const records = readRecords(sheet);
 
@@ -18,11 +29,15 @@ function doGet(e) {
     });
   }
 
+  if (senderAction) {
+    return getSenderGuests(e.parameter);
+  }
+
   if (inviteToken) {
     const guest = records.find(row => String(row["Invite Token"]).trim() === inviteToken);
     return jsonOutput({
       success: !!guest,
-      guest: guest || null
+      guest: guest ? toPublicGuest(guest) : null
     });
   }
 
@@ -30,14 +45,41 @@ function doGet(e) {
     const guest = records.find(row => String(row["Check-in Token"]).trim() === checkinToken);
     return jsonOutput({
       success: !!guest,
-      guest: guest || null
+      guest: guest ? toPublicGuest(guest) : null
     });
   }
 
   return jsonOutput({
     success: true,
-    guests: records
+    message: "Use a private invitation token to load invitation details."
   });
+}
+
+function toPublicGuest(record) {
+  const allowedFields = [
+    "Family ID",
+    "Family Name",
+    "Side",
+    "Category",
+    "Contact Person",
+    "Adults",
+    "Children",
+    "Total",
+    "Day 1",
+    "Day 2",
+    "RSVP",
+    "QR Generated",
+    "Invite Token",
+    "Check-in Token",
+    "Invitation PDF link",
+    "Special Request",
+    "Checked In"
+  ];
+  const guest = {};
+  allowedFields.forEach(field => {
+    if (Object.prototype.hasOwnProperty.call(record, field)) guest[field] = record[field];
+  });
+  return guest;
 }
 
 function doPost(e) {
@@ -55,10 +97,205 @@ function doPost(e) {
     return saveBlessing(body);
   }
 
+  if (body.action === "senderStatus") {
+    return updateSenderStatus(body);
+  }
+
   return jsonOutput({
     success: false,
     error: "Unknown action"
   });
+}
+
+function getSenderGuests(parameters) {
+  const pin = String(parameters.pin || "").trim();
+  const side = normalizeSide(parameters.side);
+
+  if (!isValidSenderPin(pin)) {
+    return jsonOutput({ success: false, error: "Invalid sender PIN" });
+  }
+
+  if (!side) {
+    return jsonOutput({ success: false, error: "Choose Groom or Bride side" });
+  }
+
+  const sheet = getGuestSheet();
+  ensureSenderColumns(sheet);
+  const records = readRecords(sheet)
+    .filter(record => normalizeSide(record["Side"]) === side)
+    .filter(record => String(record["Invite Token"] || "").trim())
+    .map(toSenderGuest);
+
+  return jsonOutput({
+    success: true,
+    side,
+    guests: records,
+    invitationSiteUrl: INVITATION_SITE_URL,
+    timestamp: new Date().toISOString()
+  });
+}
+
+function updateSenderStatus(body) {
+  const pin = String(body.pin || "").trim();
+  const inviteToken = String(body.invite || "").trim();
+  const actor = normalizeSenderActor(body.actor);
+  const status = normalizeSenderStatus(body.status);
+  const videoSent = normalizeYesNo(body.videoSent);
+  const linkSent = normalizeYesNo(body.linkSent);
+  const notes = String(body.notes || "").trim().substring(0, 500);
+
+  if (!isValidSenderPin(pin)) {
+    return jsonOutput({ success: false, error: "Invalid sender PIN" });
+  }
+
+  if (!inviteToken || !actor || !status) {
+    return jsonOutput({ success: false, error: "Missing or invalid sender update" });
+  }
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(15000);
+
+  try {
+    const sheet = getGuestSheet();
+    ensureSenderColumns(sheet);
+    const table = readTable(sheet);
+    const rowIndex = table.records.findIndex(record => String(record["Invite Token"] || "").trim() === inviteToken);
+
+    if (rowIndex === -1) {
+      return jsonOutput({ success: false, error: "Invite token not found" });
+    }
+
+    const record = table.records[rowIndex];
+    const side = normalizeSide(record["Side"]);
+    if ((side === "Groom" && actor !== "Inderdip") || (side === "Bride" && actor !== "Deepali")) {
+      return jsonOutput({ success: false, error: "Sender does not match guest side" });
+    }
+
+    const rowNumber = rowIndex + 2;
+    setCell(sheet, table.headers, rowNumber, "Invitation Send Status", status);
+    setCell(sheet, table.headers, rowNumber, "Video Sent", videoSent);
+    setCell(sheet, table.headers, rowNumber, "Link Sent", linkSent);
+    setCell(sheet, table.headers, rowNumber, "Invitation Sent By", actor);
+    setCell(sheet, table.headers, rowNumber, "Invitation Send Notes", notes);
+
+    if (status === "Sent" && videoSent === "Yes" && linkSent === "Yes") {
+      setCell(sheet, table.headers, rowNumber, "Invitation Sent At", new Date());
+    }
+
+    SpreadsheetApp.flush();
+    return jsonOutput({ success: true, guest: toSenderGuest(readRecords(sheet)[rowIndex]) });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function toSenderGuest(record) {
+  const phone = normalizeWhatsAppNumber(record["Phone"]);
+  const inviteToken = String(record["Invite Token"] || "").trim();
+  return {
+    familyId: String(record["Family ID"] || "").trim(),
+    familyName: String(record["Family Name"] || "").trim(),
+    contactPerson: String(record["Contact Person"] || "").trim(),
+    side: normalizeSide(record["Side"]),
+    category: String(record["Category"] || "").trim(),
+    whatsappNumber: phone,
+    phoneEnding: phone ? phone.slice(-4) : "",
+    inviteToken,
+    invitationUrl: INVITATION_SITE_URL + "?invite=" + encodeURIComponent(inviteToken),
+    sendStatus: normalizeSenderStatus(record["Invitation Send Status"]) || "Pending",
+    videoSent: normalizeYesNo(record["Video Sent"]),
+    linkSent: normalizeYesNo(record["Link Sent"]),
+    sentBy: String(record["Invitation Sent By"] || "").trim(),
+    sentAt: formatSheetDate(record["Invitation Sent At"]),
+    notes: String(record["Invitation Send Notes"] || "").trim()
+  };
+}
+
+function ensureSenderColumns(sheet) {
+  const table = readTable(sheet);
+  const missingHeaders = SENDER_HEADERS.filter(header => table.headers.indexOf(header) === -1);
+  if (!missingHeaders.length) return;
+
+  const startColumn = sheet.getLastColumn() + 1;
+  sheet.getRange(1, startColumn, 1, missingHeaders.length).setValues([missingHeaders]);
+  sheet.getRange(1, startColumn, 1, missingHeaders.length)
+    .setFontWeight("bold")
+    .setBackground("#4b1834")
+    .setFontColor("#ffffff");
+
+  const rowCount = Math.max(1, sheet.getMaxRows() - 1);
+  missingHeaders.forEach((header, index) => {
+    if (["Invitation Send Status", "Video Sent", "Link Sent"].indexOf(header) === -1) return;
+    const values = header === "Invitation Send Status"
+      ? ["Pending", "In Progress", "Sent", "Issue"]
+      : ["No", "Yes"];
+    const rule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(values, true)
+      .setAllowInvalid(false)
+      .build();
+    sheet.getRange(2, startColumn + index, rowCount, 1).setDataValidation(rule);
+  });
+}
+
+function setupInvitationSender(pin) {
+  let cleanPin = String(pin || "").trim();
+  if (!cleanPin) {
+    cleanPin = String(Math.floor(10000000 + Math.random() * 90000000));
+  }
+  if (!/^\d{6,12}$/.test(cleanPin)) {
+    throw new Error("Choose a numeric PIN containing 6 to 12 digits.");
+  }
+  PropertiesService.getScriptProperties().setProperty(SENDER_PIN_PROPERTY, cleanPin);
+  ensureSenderColumns(getGuestSheet());
+  Logger.log("Invitation Sender PIN: " + cleanPin);
+  return "Invitation sender is ready. Open the execution log to copy the PIN.";
+}
+
+function isValidSenderPin(pin) {
+  const savedPin = PropertiesService.getScriptProperties().getProperty(SENDER_PIN_PROPERTY);
+  return !!savedPin && String(pin) === savedPin;
+}
+
+function normalizeSide(value) {
+  const side = String(value || "").trim().toLowerCase();
+  if (side === "groom") return "Groom";
+  if (side === "bride") return "Bride";
+  return "";
+}
+
+function normalizeSenderActor(value) {
+  const actor = String(value || "").trim().toLowerCase();
+  if (actor === "inderdip") return "Inderdip";
+  if (actor === "deepali") return "Deepali";
+  return "";
+}
+
+function normalizeSenderStatus(value) {
+  const status = String(value || "").trim().toLowerCase();
+  if (status === "pending") return "Pending";
+  if (status === "in progress") return "In Progress";
+  if (status === "sent") return "Sent";
+  if (status === "issue") return "Issue";
+  return "";
+}
+
+function normalizeYesNo(value) {
+  return String(value || "").trim().toLowerCase() === "yes" ? "Yes" : "No";
+}
+
+function normalizeWhatsAppNumber(value) {
+  let digits = String(value || "").replace(/\D/g, "");
+  if (digits.length === 10) digits = "91" + digits;
+  if (digits.length === 11 && digits.charAt(0) === "0") digits = "91" + digits.substring(1);
+  return digits;
+}
+
+function formatSheetDate(value) {
+  if (!value) return "";
+  if (Object.prototype.toString.call(value) === "[object Date]" && !isNaN(value.getTime())) {
+    return value.toISOString();
+  }
+  return String(value);
 }
 
 function saveBlessing(body) {
@@ -139,7 +376,7 @@ function updateRsvp(body) {
 
   return jsonOutput({
     success: true,
-    guest: readRecords(sheet)[rowIndex]
+    guest: toPublicGuest(readRecords(sheet)[rowIndex])
   });
 }
 
@@ -163,7 +400,7 @@ function markCheckedIn(body) {
 
   return jsonOutput({
     success: true,
-    guest: readRecords(sheet)[rowIndex]
+    guest: toPublicGuest(readRecords(sheet)[rowIndex])
   });
 }
 

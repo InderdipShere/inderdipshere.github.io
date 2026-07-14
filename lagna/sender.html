@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title>Invitation Sender · Deepali & Inderdip</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+  <link rel="stylesheet" href="sender.css?v=20260714-1" />
+</head>
+<body>
+  <main class="sender-shell">
+    <header class="sender-header">
+      <p class="eyebrow">Private wedding tool</p>
+      <h1>Invitation Sender</h1>
+      <p>Send the saved video and each family’s personalized invitation link, one conversation at a time.</p>
+    </header>
+
+    <section id="loginPanel" class="panel login-panel">
+      <h2>Choose your guest list</h2>
+      <form id="loginForm">
+        <fieldset class="side-picker">
+          <legend>Who is sending?</legend>
+          <label>
+            <input type="radio" name="side" value="Groom" checked />
+            <span><strong>Inderdip</strong><small>Groom-side guests</small></span>
+          </label>
+          <label>
+            <input type="radio" name="side" value="Bride" />
+            <span><strong>Deepali</strong><small>Bride-side guests</small></span>
+          </label>
+        </fieldset>
+        <label class="pin-field" for="senderPin">
+          Private sender PIN
+          <input id="senderPin" name="pin" type="password" inputmode="numeric" autocomplete="current-password" minlength="6" maxlength="12" required />
+        </label>
+        <button class="primary-button" type="submit">Open guest list</button>
+        <p id="loginStatus" class="status-text" role="status"></p>
+      </form>
+    </section>
+
+    <section id="senderApp" hidden>
+      <div class="panel session-bar">
+        <div>
+          <span id="sessionLabel" class="session-label"></span>
+          <small id="lastUpdated"></small>
+        </div>
+        <button id="switchSideButton" class="text-button" type="button">Switch sender</button>
+      </div>
+
+      <section class="progress-grid" aria-label="Invitation progress">
+        <article><strong id="pendingCount">0</strong><span>Pending</span></article>
+        <article><strong id="progressCount">0</strong><span>In progress</span></article>
+        <article><strong id="sentCount">0</strong><span>Sent</span></article>
+        <article><strong id="issueCount">0</strong><span>Issues</span></article>
+      </section>
+
+      <section class="panel controls">
+        <label for="guestSearch">Find a family or contact</label>
+        <input id="guestSearch" type="search" placeholder="Search guest list" autocomplete="off" />
+        <div id="statusFilters" class="filter-row" role="group" aria-label="Filter invitation status">
+          <button class="filter active" type="button" data-filter="active">To send</button>
+          <button class="filter" type="button" data-filter="Sent">Sent</button>
+          <button class="filter" type="button" data-filter="Issue">Issues</button>
+          <button class="filter" type="button" data-filter="all">All</button>
+        </div>
+      </section>
+
+      <div id="appStatus" class="app-status" role="status"></div>
+      <section id="guestList" class="guest-list" aria-live="polite"></section>
+    </section>
+  </main>
+
+  <template id="guestCardTemplate">
+    <article class="guest-card">
+      <div class="guest-card-heading">
+        <div>
+          <p class="family-id"></p>
+          <h2 class="family-name"></h2>
+          <p class="contact-line"></p>
+        </div>
+        <span class="status-badge"></span>
+      </div>
+
+      <ol class="send-steps">
+        <li class="video-step">
+          <div class="step-copy">
+            <strong>Send the invitation video</strong>
+            <span>Open WhatsApp, attach the saved video from the phone, and send it.</span>
+          </div>
+          <a class="whatsapp-button video-button" target="_blank" rel="noopener">Open WhatsApp</a>
+          <button class="confirm-button confirm-video" type="button">I sent the video</button>
+        </li>
+        <li class="link-step">
+          <div class="step-copy">
+            <strong>Send the personalized message</strong>
+            <span>The family name and private invitation link are already included.</span>
+          </div>
+          <a class="whatsapp-button message-button" target="_blank" rel="noopener">Open prepared message</a>
+          <button class="copy-button" type="button">Copy message</button>
+          <button class="confirm-button confirm-link" type="button">I sent the message</button>
+        </li>
+      </ol>
+
+      <details class="message-preview">
+        <summary>Preview message and link</summary>
+        <pre></pre>
+      </details>
+
+      <label class="notes-field">
+        Notes
+        <textarea rows="2" maxlength="500" placeholder="Optional: wrong number, call first, resend later…"></textarea>
+      </label>
+
+      <div class="card-actions">
+        <button class="complete-button" type="button">Mark invitation complete</button>
+        <button class="issue-button" type="button">Mark an issue</button>
+      </div>
+      <p class="card-feedback" role="status"></p>
+    </article>
+  </template>
+
+  <script src="sender.js?v=20260714-1"></script>
+</body>
+</html>
