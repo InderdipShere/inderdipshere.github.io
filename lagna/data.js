@@ -86,6 +86,14 @@ function isRsvpConfirmed(guest) {
   return ["yes", "done", "confirmed"].includes(String(guest.rsvp || "").trim().toLowerCase());
 }
 
+function isRsvpDeclined(guest) {
+  return ["no", "issue", "declined", "not attending"].includes(String(guest.rsvp || "").trim().toLowerCase());
+}
+
+function canOpenInvitationPdf(guest) {
+  return guest && (isRsvpConfirmed(guest) || isRsvpDeclined(guest));
+}
+
 function buildGuestInfo(guest, rsvpStatus) {
   const rows = [
     `<strong>Family:</strong> ${escapeHtml(guest.familyName)}`,
@@ -95,6 +103,9 @@ function buildGuestInfo(guest, rsvpStatus) {
 
   if (isRsvpConfirmed(guest)) {
     rows.splice(2, 0, `<strong>Confirmed Guests:</strong> ${escapeHtml(guest.total || 0)}`);
+  }
+
+  if (canOpenInvitationPdf(guest)) {
     const invitationUrl = getInvitationPdfUrl(guest);
     if (invitationUrl) {
       rows.push(`<a class="guest-card-link" href="${escapeHtml(invitationUrl)}" target="_blank" rel="noopener">View Invitation PDF</a>`);
@@ -127,8 +138,8 @@ function renderInvitationDownloadPanel(guest, statusMessage = "") {
   const panel = document.getElementById("invitationDownloadPanel");
   if (!panel) return;
 
-  const invitationUrl = guest && isRsvpConfirmed(guest) ? getInvitationPdfUrl(guest) : "";
-  const richInvitationUrl = guest && isRsvpConfirmed(guest) ? getRichInvitationPdfUrl(guest) : "";
+  const invitationUrl = canOpenInvitationPdf(guest) ? getInvitationPdfUrl(guest) : "";
+  const richInvitationUrl = canOpenInvitationPdf(guest) ? getRichInvitationPdfUrl(guest) : "";
   if (!invitationUrl) {
     panel.hidden = true;
     panel.innerHTML = "";
@@ -140,7 +151,7 @@ function renderInvitationDownloadPanel(guest, statusMessage = "") {
     <div class="download-card quick">
       <div>
         <strong>Invitation PDF is ready</strong>
-        <p>${escapeHtml(statusMessage || "Your personalized QR invitation opens as a quick, optimized PDF.")}</p>
+        <p>${escapeHtml(statusMessage || (isRsvpConfirmed(guest) ? "Your personalized QR invitation opens as a quick, optimized PDF." : "Your invitation and livestream details open as a quick, optimized PDF without venue QR code."))}</p>
       </div>
       <a class="btn primary" href="${escapeHtml(invitationUrl)}" target="_blank" rel="noopener">Open Quick PDF</a>
     </div>
@@ -417,16 +428,19 @@ async function submitRsvp(event) {
 
     await delay(1800);
     await loadDataFromGoogleSheets();
+    if (!canOpenInvitationPdf(currentGuest)) {
+      applyLocalRsvpState(payload);
+    }
 
     if (status) {
       status.textContent = payload.rsvp === "Yes"
         ? "RSVP confirmed. Your personalized invitation PDF is ready below."
-        : "RSVP updated. Invitation and livestream details remain available.";
+        : "RSVP updated. Your invitation PDF and livestream details are ready below.";
     }
     if (payload.rsvp === "Yes") {
       renderInvitationDownloadPanel(currentGuest, "Your QR entry code is included on page 4. Open or download the PDF before coming to the venue.");
     } else {
-      renderInvitationDownloadPanel(null);
+      renderInvitationDownloadPanel(currentGuest, "Your invitation and livestream details are available below. Because you are not attending in person, the venue QR area is left blank.");
     }
   } catch (error) {
     console.error("RSVP submission failed:", error);
