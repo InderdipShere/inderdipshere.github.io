@@ -144,6 +144,8 @@ function lockCheckin() {
   if (state.qrReader) state.qrReader.stop().catch(() => {}); state.qrReader = null;
   localStorage.removeItem(CHECKIN_STORAGE_KEY); state.pin = "";
   document.getElementById("checkinApp").hidden = true; document.getElementById("loginPanel").hidden = false; document.getElementById("checkinPin").value = "";
+  document.querySelector(".camera-panel").hidden = false;
+  document.querySelector(".manual-panel").hidden = false;
 }
 
 document.getElementById("loginForm").addEventListener("submit", async event => {
@@ -154,7 +156,12 @@ document.getElementById("loginForm").addEventListener("submit", async event => {
     const response = await fetch(url); const payload = await response.json();
     if (payload.error === "Invalid check-in PIN") { setLoginStatus("That PIN is not valid."); return; }
     localStorage.setItem(CHECKIN_STORAGE_KEY, state.pin); document.getElementById("loginPanel").hidden = true; document.getElementById("checkinApp").hidden = false;
-    if (state.pendingToken) submitToken(state.pendingToken);
+    if (state.pendingToken) {
+      document.querySelector(".camera-panel").hidden = true;
+      document.querySelector(".manual-panel").hidden = true;
+      showResult("pending", "Loading family invitation…", "Checking the QR invitation now.");
+      await submitToken(state.pendingToken);
+    }
   } catch (_) { setLoginStatus("Could not reach the guest list. Check the connection."); }
 });
 document.getElementById("manualForm").addEventListener("submit", event => { event.preventDefault(); submitToken(document.getElementById("tokenInput").value); });
