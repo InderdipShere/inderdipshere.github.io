@@ -47,7 +47,7 @@ function doGet(e) {
     if (!validateCheckinPin(e.parameter.pin)) {
       return jsonOutput({ success: false, error: "Invalid check-in PIN" });
     }
-    const guest = records.find(row => String(row["Check-in Token"]).trim() === checkinToken);
+    const guest = records.find(row => normalizeCheckinToken(row["Check-in Token"]) === normalizeCheckinToken(checkinToken));
     const eventDay = normalizeCheckinEvent(e.parameter.eventDay);
     return jsonOutput({
       success: !!guest,
@@ -491,7 +491,7 @@ function markCheckedIn(body) {
 
   const sheet = getGuestSheet();
   const table = readTable(sheet);
-  const rowIndex = table.records.findIndex(row => String(row["Check-in Token"]).trim() === checkinToken);
+  const rowIndex = table.records.findIndex(row => normalizeCheckinToken(row["Check-in Token"]) === normalizeCheckinToken(checkinToken));
 
   if (rowIndex === -1) {
     return jsonOutput({ success: false, error: "Check-in token not found" });
@@ -536,6 +536,10 @@ function normalizeCheckinEvent(value) {
   return String(value || "").trim() === "Day 2" ? "Day 2" : "Day 1";
 }
 
+function normalizeCheckinToken(value) {
+  return String(value || "").trim().toUpperCase();
+}
+
 function getCheckinState(checkinToken, eventDay) {
   const sheet = getOrCreateCheckinLogSheet();
   const values = sheet.getDataRange().getValues();
@@ -544,7 +548,7 @@ function getCheckinState(checkinToken, eventDay) {
   const eventColumn = headers.indexOf("Event Day");
   const timestampColumn = headers.indexOf("Checked In At");
   for (let index = values.length - 1; index > 0; index--) {
-    if (String(values[index][tokenColumn] || "").trim() === checkinToken && String(values[index][eventColumn] || "").trim() === eventDay) {
+    if (normalizeCheckinToken(values[index][tokenColumn]) === normalizeCheckinToken(checkinToken) && String(values[index][eventColumn] || "").trim() === eventDay) {
       return { checkedIn: true, checkedInAt: values[index][timestampColumn] };
     }
   }
