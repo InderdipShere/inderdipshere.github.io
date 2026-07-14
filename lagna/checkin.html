@@ -28,6 +28,11 @@
     </section>
 
     <section id="checkinApp" hidden>
+      <section class="panel event-panel">
+        <label for="eventDay">Check-in for
+          <select id="eventDay"><option value="Day 1">Day 1</option><option value="Day 2">Day 2</option></select>
+        </label>
+      </section>
       <div class="panel camera-panel">
         <div class="camera-heading"><h2>Scan family QR pass</h2><button id="lockButton" class="text-button" type="button">Lock</button></div>
         <div id="qrReader" hidden></div>
@@ -50,6 +55,6 @@
     </section>
   </main>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-  <script src="checkin.js?v=20260714-3"></script>
+  <script src="checkin.js?v=20260714-4"></script>
 </body>
 </html>
