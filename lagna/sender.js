@@ -1,4 +1,6 @@
 const SENDER_API_URL = "https://script.google.com/macros/s/AKfycbzFTHa53ENMn0udXLJ1O7IqqgkxJ4cTEHNZFm8wkpu91gHT-s3Ud7uBzqfCW4qd_gPb/exec";
+// Replace this with the final Unlisted YouTube URL after the invitation film is uploaded.
+const INVITATION_VIDEO_URL = "https://www.youtube.com/watch?v=YOUR_UNLISTED_WEDDING_FILM";
 const SENDER_STORAGE_KEY = "lagna-invitation-sender";
 const IS_LOCAL_PREVIEW = ["127.0.0.1", "localhost"].includes(window.location.hostname)
   && new URLSearchParams(window.location.search).has("preview");
@@ -33,6 +35,7 @@ function buildMessage(guest, templateName = "pranam") {
   const coupleNamesMarathi = "दीपाली व इंदरदीप";
   const coupleNamesEnglish = "Deepali & Inderdip";
   const link = guest.invitationUrl;
+  const videoLink = INVITATION_VIDEO_URL;
   const englishFamilyName = guest.familyName ? `the ${guest.familyName} family` : "your family";
   const marathiFamilyGreeting = `${greetingName} जी आणि ${familyName} परिवारातील सर्व आदरणीय ज्येष्ठ व प्रियजनांनो`;
   const englishFamilyGreeting = `${greetingName} ji, respected elders and every member of ${englishFamilyName}`;
@@ -157,7 +160,18 @@ function buildMessage(guest, templateName = "pranam") {
     ]
   };
 
-  return (messages[templateName] || messages.pranam).join("\n");
+  const selectedMessage = (messages[templateName] || messages.pranam)
+    .join("\n")
+    .replace(/invitation video once more/gi, "invitation film")
+    .replace(/personal link above/gi, "personal link below")
+    .replace(/invitation link above/gi, "invitation link below");
+
+  return [
+    "🎬 विवाह-आमंत्रण चित्रपट | Wedding Invitation Film",
+    videoLink,
+    "",
+    selectedMessage
+  ].join("\n");
 }
 
 function buildWhatsAppUrl(number, message) {
@@ -276,7 +290,6 @@ function createGuestCard(guest) {
     || (guest.deliveryType === "Personal Link Ready" ? "ready" : "pranam");
   let message = buildMessage(guest, selectedTemplate);
   const hasPhone = /^\d{10,15}$/.test(guest.whatsappNumber || "");
-  const videoDone = guest.videoSent === "Yes";
   const linkDone = guest.linkSent === "Yes";
   const isBusy = senderState.busy.has(guest.inviteToken);
 
@@ -289,16 +302,8 @@ function createGuestCard(guest) {
   badge.textContent = guest.sendStatus || "Pending";
   badge.className = `status-badge ${statusClass(guest.sendStatus)}`;
 
-  const videoStep = card.querySelector(".video-step");
   const linkStep = card.querySelector(".link-step");
-  videoStep.classList.toggle("done", videoDone);
   linkStep.classList.toggle("done", linkDone);
-
-  const videoButton = card.querySelector(".video-button");
-  videoButton.href = hasPhone ? buildWhatsAppUrl(guest.whatsappNumber) : "#";
-  videoButton.setAttribute("aria-disabled", String(!hasPhone));
-  if (!hasPhone) videoButton.addEventListener("click", event => event.preventDefault());
-  videoButton.addEventListener("click", () => claimGuest(guest));
 
   const messageButton = card.querySelector(".message-button");
   messageButton.href = hasPhone ? buildWhatsAppUrl(guest.whatsappNumber, message) : "#";
@@ -318,11 +323,6 @@ function createGuestCard(guest) {
   });
   card.querySelector(".notes-field textarea").value = guest.notes || "";
 
-  const confirmVideo = card.querySelector(".confirm-video");
-  confirmVideo.textContent = videoDone ? "✓ Video marked as sent" : "I sent the video";
-  confirmVideo.disabled = videoDone || isBusy;
-  confirmVideo.addEventListener("click", () => saveProgress(guest, card, { videoSent: "Yes" }));
-
   const confirmLink = card.querySelector(".confirm-link");
   confirmLink.textContent = linkDone ? "✓ Message marked as sent" : "I sent the message";
   confirmLink.disabled = linkDone || isBusy;
@@ -339,7 +339,7 @@ function createGuestCard(guest) {
   });
 
   const completeButton = card.querySelector(".complete-button");
-  completeButton.disabled = !videoDone || !linkDone || guest.sendStatus === "Sent" || isBusy;
+  completeButton.disabled = !linkDone || guest.sendStatus === "Sent" || isBusy;
   completeButton.textContent = guest.sendStatus === "Sent" ? "✓ Invitation complete" : "Mark invitation complete";
   completeButton.addEventListener("click", () => saveProgress(guest, card, { status: "Sent" }));
 
@@ -359,7 +359,7 @@ function claimGuest(guest) {
   postSenderUpdate({
     guest,
     status: "In Progress",
-    videoSent: guest.videoSent,
+    videoSent: "Yes",
     linkSent: guest.linkSent,
     notes: guest.notes || ""
   });
@@ -372,13 +372,13 @@ async function saveProgress(guest, card, changes) {
   const notes = card.querySelector(".notes-field textarea").value.trim();
   const next = {
     status: changes.status || (guest.sendStatus === "Pending" ? "In Progress" : guest.sendStatus),
-    videoSent: changes.videoSent || guest.videoSent || "No",
+    videoSent: changes.videoSent || (changes.linkSent === "Yes" ? "Yes" : guest.videoSent || "No"),
     linkSent: changes.linkSent || guest.linkSent || "No",
     notes
   };
 
-  if (next.status === "Sent" && (next.videoSent !== "Yes" || next.linkSent !== "Yes")) {
-    setCardFeedback(card, "Confirm both the video and the message before completing this invitation.");
+  if (next.status === "Sent" && next.linkSent !== "Yes") {
+    setCardFeedback(card, "Confirm that the complete WhatsApp message was sent before completing this invitation.");
     return;
   }
 
