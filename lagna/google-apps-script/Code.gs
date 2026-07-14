@@ -490,6 +490,7 @@ function markCheckedIn(body) {
   }
 
   const sheet = getGuestSheet();
+  ensureWorkflowColumns(sheet);
   const table = readTable(sheet);
   const rowIndex = table.records.findIndex(row => normalizeCheckinToken(row["Check-in Token"]) === normalizeCheckinToken(checkinToken));
 
@@ -501,9 +502,6 @@ function markCheckedIn(body) {
   const wasCheckedIn = getCheckinState(checkinToken, eventDay).checkedIn;
   const expectedAdults = parseCheckinCount(table.records[rowIndex]["Adults"]);
   const expectedChildren = parseCheckinCount(table.records[rowIndex]["Children"]);
-  if ((adults !== expectedAdults || children !== expectedChildren) && !notes) {
-    return jsonOutput({ success: false, error: "Add a note when the actual guest count differs from the RSVP." });
-  }
   setCell(sheet, table.headers, rowNumber, "Checked In", "Yes");
   if (!wasCheckedIn && table.headers.indexOf("Checked In At") !== -1) {
     setCell(sheet, table.headers, rowNumber, "Checked In At", new Date());
