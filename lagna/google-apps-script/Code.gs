@@ -549,9 +549,20 @@ function getCheckinState(checkinToken, eventDay) {
   const tokenColumn = headers.indexOf("Check-in Token");
   const eventColumn = headers.indexOf("Event Day");
   const timestampColumn = headers.indexOf("Checked In At");
+  const adultsColumn = headers.indexOf("Actual Adults");
+  const childrenColumn = headers.indexOf("Actual Children");
+  const totalColumn = headers.indexOf("Actual Total");
+  const notesColumn = headers.indexOf("Check-in Notes");
   for (let index = values.length - 1; index > 0; index--) {
     if (normalizeCheckinToken(values[index][tokenColumn]) === normalizeCheckinToken(checkinToken) && String(values[index][eventColumn] || "").trim() === eventDay) {
-      return { checkedIn: true, checkedInAt: values[index][timestampColumn] };
+      return {
+        checkedIn: true,
+        checkedInAt: values[index][timestampColumn],
+        actualAdults: values[index][adultsColumn],
+        actualChildren: values[index][childrenColumn],
+        actualTotal: values[index][totalColumn],
+        notes: values[index][notesColumn]
+      };
     }
   }
   return { checkedIn: false, checkedInAt: "" };
