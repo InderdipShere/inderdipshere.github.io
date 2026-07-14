@@ -18,7 +18,7 @@ const REQUEST_HEADERS = [
   "Request Notes",
   "Invitation Delivery Type"
 ];
-const CHECKIN_HEADERS = ["Checked In At", "Checked In Adults", "Checked In Children", "Checked In Total", "Check-in Notes"];
+const CHECKIN_HEADERS = ["Checked In", "Checked In At", "Checked In Adults", "Checked In Children", "Checked In Total", "Check-in Notes"];
 
 function doGet(e) {
   const health = String(e.parameter.health || "").trim();
@@ -301,7 +301,7 @@ function ensureWorkflowColumns(sheet) {
 
   const rowCount = Math.max(1, sheet.getMaxRows() - 1);
   missingHeaders.forEach((header, index) => {
-    if (["Invitation Send Status", "Video Sent", "Link Sent", "Invitation Request Status"].indexOf(header) === -1) return;
+    if (["Invitation Send Status", "Video Sent", "Link Sent", "Invitation Request Status", "Checked In"].indexOf(header) === -1) return;
     const values = header === "Invitation Send Status"
       ? ["Pending", "In Progress", "Sent", "Issue"]
       : header === "Invitation Request Status"
