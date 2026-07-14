@@ -28,13 +28,15 @@ function statusClass(status) {
 
 function buildMessage(guest, templateName = "pranam") {
   const greetingName = guest.contactPerson || `${guest.familyName} Family`;
+  const familyName = guest.familyName || "आपल्या";
   const senderName = senderState.actor === "Deepali" ? "दीपाली" : "इंदरदीप";
   const englishSender = senderState.actor === "Deepali" ? "Deepali" : "Inderdip";
   const link = guest.invitationUrl;
-  const marathiFamilyGreeting = `${greetingName} जी आणि आपल्या परिवारातील सर्व आदरणीय ज्येष्ठ व प्रियजनांनो`;
-  const englishFamilyGreeting = `${greetingName} ji, respected elders and every member of your family`;
-  const marathiFamilyNote = "हा स्नेहपूर्ण संदेश आपल्या घरातील सर्व मान्यवर ज्येष्ठ, प्रियजन आणि परिवारातील प्रत्येक सदस्यासाठी आहे. 🌸";
-  const englishFamilyNote = "This heartfelt invitation is for the respected elders, loved ones and every member of your family. 🌸";
+  const englishFamilyName = guest.familyName ? `the ${guest.familyName} family` : "your family";
+  const marathiFamilyGreeting = `${greetingName} जी आणि ${familyName} परिवारातील सर्व आदरणीय ज्येष्ठ व प्रियजनांनो`;
+  const englishFamilyGreeting = `${greetingName} ji, respected elders and every member of ${englishFamilyName}`;
+  const marathiFamilyNote = `हा स्नेहपूर्ण संदेश ${familyName} परिवारातील सर्व मान्यवर ज्येष्ठ, प्रियजन आणि प्रत्येक सदस्यासाठी आहे. 🌸`;
+  const englishFamilyNote = `This heartfelt invitation is for the respected elders, loved ones and every member of ${englishFamilyName}. 🌸`;
 
   const messages = {
     pranam: [
