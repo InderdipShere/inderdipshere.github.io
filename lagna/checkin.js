@@ -78,7 +78,15 @@ async function confirmCheckin(token, adults, children, notes) {
   const button = document.querySelector("#approvalForm button");
   if (button) { button.disabled = true; button.textContent = "Recording check-in…"; }
   try {
-    const response = await fetch(CHECKIN_API_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ action:"checkin", pin:state.pin, checkin:token, eventDay:state.eventDay, adults, children, notes }) });
+    const url = new URL(CHECKIN_API_URL);
+    url.searchParams.set("security", "recordCheckin");
+    url.searchParams.set("pin", state.pin);
+    url.searchParams.set("checkin", token);
+    url.searchParams.set("eventDay", state.eventDay);
+    url.searchParams.set("adults", adults);
+    url.searchParams.set("children", children);
+    url.searchParams.set("notes", notes);
+    const response = await fetch(url, { cache: "no-store" });
     if (!response.ok) throw new Error("The check-in service could not be reached.");
     const payload = await response.json();
     if (!payload.success) throw new Error(payload.error || "The check-in service rejected this entry.");
