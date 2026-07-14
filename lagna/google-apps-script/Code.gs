@@ -10,6 +10,12 @@ const SENDER_HEADERS = [
   "Invitation Sent At",
   "Invitation Send Notes"
 ];
+const REQUEST_HEADERS = [
+  "Invitation Request Status",
+  "Request Submitted At",
+  "Request Notes",
+  "Invitation Delivery Type"
+];
 
 function doGet(e) {
   const health = String(e.parameter.health || "").trim();
@@ -101,10 +107,62 @@ function doPost(e) {
     return updateSenderStatus(body);
   }
 
+  if (body.action === "requestInvite") {
+    return createInvitationRequest(body);
+  }
+
   return jsonOutput({
     success: false,
     error: "Unknown action"
   });
+}
+
+function createInvitationRequest(body) {
+  const name = String(body.name || "").trim().substring(0, 120);
+  const familyName = String(body.familyName || "").trim().substring(0, 120);
+  const phone = normalizeWhatsAppNumber(body.phone);
+  const side = normalizeSide(body.side);
+  if (!name || !familyName || !phone || !side) {
+    return jsonOutput({ success: false, error: "Please provide your name, family name, WhatsApp number and invited side." });
+  }
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(15000);
+  try {
+    const sheet = getGuestSheet();
+    ensureWorkflowColumns(sheet);
+    const table = readTable(sheet);
+    const existing = table.records.find(record => normalizeWhatsAppNumber(record["Phone"]) === phone
+      && ["Pending Approval", "Approved"].indexOf(String(record["Invitation Request Status"] || "").trim()) !== -1);
+    if (existing) {
+      return jsonOutput({ success: true, alreadyRequested: true, message: "Your request is already waiting for approval. You will receive your personal invitation link on WhatsApp once it is ready." });
+    }
+
+    const record = {};
+    record["Family ID"] = "REQ-" + Utilities.getUuid().replace(/-/g, "").substring(0, 10).toUpperCase();
+    record["Family Name"] = familyName;
+    record["Side"] = side;
+    record["Category"] = "Website Request";
+    record["Contact Person"] = name;
+    record["Phone"] = phone;
+    record["Adults"] = 0;
+    record["Children"] = 0;
+    record["Total"] = 0;
+    record["RSVP"] = "Pending";
+    record["QR Generated"] = "No";
+    record["Special Request"] = "Website invitation request — awaiting approval";
+    record["Invitation Request Status"] = "Pending Approval";
+    record["Request Submitted At"] = new Date();
+    record["Request Notes"] = "Submitted from general invitation page";
+    record["Invitation Delivery Type"] = "Personal Link Ready";
+    record["Invitation Send Status"] = "Pending";
+    record["Video Sent"] = "No";
+    record["Link Sent"] = "No";
+    sheet.appendRow(table.headers.map(header => record[header] === undefined ? "" : record[header]));
+    return jsonOutput({ success: true, message: "Thank you. Your request is waiting for approval. You will receive your personalized invitation link on WhatsApp once it is ready." });
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function getSenderGuests(parameters) {
@@ -208,12 +266,17 @@ function toSenderGuest(record) {
     sentBy: String(record["Invitation Sent By"] || "").trim(),
     sentAt: formatSheetDate(record["Invitation Sent At"]),
     notes: String(record["Invitation Send Notes"] || "").trim()
+    ,deliveryType: String(record["Invitation Delivery Type"] || "Initial Invitation").trim()
   };
 }
 
 function ensureSenderColumns(sheet) {
+  ensureWorkflowColumns(sheet);
+}
+
+function ensureWorkflowColumns(sheet) {
   const table = readTable(sheet);
-  const missingHeaders = SENDER_HEADERS.filter(header => table.headers.indexOf(header) === -1);
+  const missingHeaders = SENDER_HEADERS.concat(REQUEST_HEADERS).filter(header => table.headers.indexOf(header) === -1);
   if (!missingHeaders.length) return;
 
   const startColumn = sheet.getLastColumn() + 1;
@@ -225,9 +288,11 @@ function ensureSenderColumns(sheet) {
 
   const rowCount = Math.max(1, sheet.getMaxRows() - 1);
   missingHeaders.forEach((header, index) => {
-    if (["Invitation Send Status", "Video Sent", "Link Sent"].indexOf(header) === -1) return;
+    if (["Invitation Send Status", "Video Sent", "Link Sent", "Invitation Request Status"].indexOf(header) === -1) return;
     const values = header === "Invitation Send Status"
       ? ["Pending", "In Progress", "Sent", "Issue"]
+      : header === "Invitation Request Status"
+        ? ["Pending Approval", "Approved", "Rejected"]
       : ["No", "Yes"];
     const rule = SpreadsheetApp.newDataValidation()
       .requireValueInList(values, true)
@@ -235,6 +300,26 @@ function ensureSenderColumns(sheet) {
       .build();
     sheet.getRange(2, startColumn + index, rowCount, 1).setDataValidation(rule);
   });
+}
+
+function onEdit(e) {
+  const range = e && e.range;
+  if (!range || range.getSheet().getName() !== SHEET_NAME || range.getRow() < 2) return;
+  const sheet = range.getSheet();
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(String);
+  const statusColumn = headers.indexOf("Invitation Request Status") + 1;
+  if (!statusColumn || range.getColumn() !== statusColumn || String(e.value || "").trim() !== "Approved") return;
+  const row = range.getRow();
+  const inviteColumn = headers.indexOf("Invite Token") + 1;
+  if (!sheet.getRange(row, inviteColumn).getValue()) {
+    const token = makeToken("INV");
+    sheet.getRange(row, inviteColumn).setValue(token);
+    setCell(sheet, headers, row, "Invitation Send Status", "Pending");
+    setCell(sheet, headers, row, "Video Sent", "No");
+    setCell(sheet, headers, row, "Link Sent", "No");
+    setCell(sheet, headers, row, "Invitation Delivery Type", "Personal Link Ready");
+    setCell(sheet, headers, row, "Request Notes", "Approved — personal invitation ready for WhatsApp sending");
+  }
 }
 
 function setupInvitationSender(pin) {
