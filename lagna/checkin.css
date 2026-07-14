@@ -7,7 +7,7 @@ header { text-align:center; margin:6px 0 22px; } h1,h2,p { margin-top:0; } h1 { 
 form,label { display:grid; gap:8px; } input { width:100%; padding:13px; border:1px solid #cbaeba; border-radius:11px; font:inherit; text-transform:uppercase; }
 button { border:0; border-radius:11px; padding:13px 15px; color:#fff; background:var(--wine); font:800 1rem inherit; cursor:pointer; } button:disabled { opacity:.5; cursor:not-allowed; } .text-button { padding:5px; color:var(--wine); background:transparent; }
 .camera-heading { display:flex; justify-content:space-between; align-items:start; gap:12px; } .camera-heading h2 { margin-bottom:8px; }
-video { display:block; width:100%; min-height:220px; border-radius:13px; background:#1e1418; object-fit:cover; } #cameraStatus { margin:10px 0; color:#765866; }
+video,#qrReader { display:block; width:100%; min-height:220px; border-radius:13px; background:#1e1418; object-fit:cover; overflow:hidden; } #qrReader video { min-height:220px; } #cameraStatus { margin:10px 0; color:#765866; }
 .result { display:none; } .result.show { display:block; } .result.approved { border:2px solid #39a56d; background:#f1fff7; } .result.rejected { border:2px solid #d25460; background:#fff2f3; } .result.pending { border:2px solid #d4a234; background:#fffaf0; }
 .result h2 { margin-bottom:8px; } .guest-summary { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:13px; } .guest-summary div { padding:10px; border-radius:10px; background:rgba(255,255,255,.7); } .guest-summary strong,.guest-summary span { display:block; } .guest-summary span { font-size:.83rem; color:#765866; }
 @media (min-width:700px) { .checkin-shell { padding-top:48px; } }

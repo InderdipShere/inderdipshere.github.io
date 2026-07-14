@@ -30,6 +30,7 @@
     <section id="checkinApp" hidden>
       <div class="panel camera-panel">
         <div class="camera-heading"><h2>Scan family QR pass</h2><button id="lockButton" class="text-button" type="button">Lock</button></div>
+        <div id="qrReader" hidden></div>
         <video id="camera" autoplay muted playsinline></video>
         <p id="cameraStatus" role="status">Camera is off.</p>
         <button id="cameraButton" type="button">Start camera</button>
@@ -48,6 +49,7 @@
       <section id="result" class="result" aria-live="assertive"></section>
     </section>
   </main>
-  <script src="checkin.js?v=20260714-1"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="checkin.js?v=20260714-2"></script>
 </body>
 </html>

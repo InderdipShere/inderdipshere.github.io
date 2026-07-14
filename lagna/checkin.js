@@ -1,6 +1,7 @@
 const CHECKIN_API_URL = "https://script.google.com/macros/s/AKfycbzFTHa53ENMn0udXLJ1O7IqqgkxJ4cTEHNZFm8wkpu91gHT-s3Ud7uBzqfCW4qd_gPb/exec";
 const CHECKIN_STORAGE_KEY = "lagna-checkin-pin";
-const state = { pin: "", stream: null, detector: null, scanning: false, lastToken: "" };
+const initialCheckinToken = extractToken(new URLSearchParams(window.location.search).get("checkin"));
+const state = { pin: "", stream: null, detector: null, qrReader: null, scanning: false, lastToken: "", pendingToken: initialCheckinToken };
 
 function extractToken(value) {
   const match = String(value || "").toUpperCase().match(/CHK-[A-Z0-9-]+/);
@@ -68,6 +69,10 @@ async function scanFrame() {
 }
 
 async function startCamera() {
+  if (window.Html5Qrcode) {
+    await startDedicatedScanner();
+    return;
+  }
   if (!("BarcodeDetector" in window)) { document.getElementById("cameraStatus").textContent = "Camera scanning is not supported by this browser. Use the manual token field below."; return; }
   try {
     state.stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" } }, audio:false });
@@ -79,8 +84,37 @@ async function startCamera() {
   } catch (error) { document.getElementById("cameraStatus").textContent = "Camera permission was not granted. Use the manual token field below."; }
 }
 
+async function startDedicatedScanner() {
+  const readerElement = document.getElementById("qrReader");
+  const camera = document.getElementById("camera");
+  try {
+    camera.hidden = true;
+    readerElement.hidden = false;
+    state.qrReader = new Html5Qrcode("qrReader");
+    await state.qrReader.start(
+      { facingMode: { exact: "environment" } },
+      { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1 },
+      async decodedText => {
+        const token = extractToken(decodedText);
+        if (!token || token === state.lastToken) return;
+        state.lastToken = token;
+        await submitToken(token, true);
+      },
+      () => {}
+    );
+    document.getElementById("cameraStatus").textContent = "Camera ready — hold the family QR pass inside the square.";
+    document.getElementById("cameraButton").textContent = "Camera scanning";
+    document.getElementById("cameraButton").disabled = true;
+  } catch (error) {
+    readerElement.hidden = true;
+    camera.hidden = false;
+    document.getElementById("cameraStatus").textContent = "Could not start the QR reader. Please allow camera access, then try the manual token field.";
+  }
+}
+
 function lockCheckin() {
   state.scanning = false; if (state.stream) state.stream.getTracks().forEach(track => track.stop()); state.stream = null;
+  if (state.qrReader) state.qrReader.stop().catch(() => {}); state.qrReader = null;
   localStorage.removeItem(CHECKIN_STORAGE_KEY); state.pin = "";
   document.getElementById("checkinApp").hidden = true; document.getElementById("loginPanel").hidden = false; document.getElementById("checkinPin").value = "";
 }
@@ -93,6 +127,7 @@ document.getElementById("loginForm").addEventListener("submit", async event => {
     const response = await fetch(url); const payload = await response.json();
     if (payload.error === "Invalid check-in PIN") { setLoginStatus("That PIN is not valid."); return; }
     localStorage.setItem(CHECKIN_STORAGE_KEY, state.pin); document.getElementById("loginPanel").hidden = true; document.getElementById("checkinApp").hidden = false;
+    if (state.pendingToken) submitToken(state.pendingToken, true);
   } catch (_) { setLoginStatus("Could not reach the guest list. Check the connection."); }
 });
 document.getElementById("manualForm").addEventListener("submit", event => { event.preventDefault(); submitToken(document.getElementById("tokenInput").value, true); });
