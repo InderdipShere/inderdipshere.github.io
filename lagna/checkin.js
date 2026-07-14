@@ -58,6 +58,23 @@ function showResult(type, title, message, guest, showApproval = false) {
 
 function escapeHtml(value) { const box = document.createElement("div"); box.textContent = String(value); return box.innerHTML; }
 
+function submitCheckinWrite(data) {
+  const form = document.createElement("form");
+  form.method = "GET";
+  form.action = CHECKIN_API_URL;
+  form.target = "checkinWriteFrame";
+  Object.entries(data).forEach(([name, value]) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    input.value = String(value || "");
+    form.appendChild(input);
+  });
+  document.body.appendChild(form);
+  form.submit();
+  form.remove();
+}
+
 async function submitToken(rawToken) {
   const token = extractToken(rawToken);
   if (!token) { showResult("rejected", "QR code not recognised", "Please scan the family QR pass again, or enter the CHK token printed on the pass."); return; }
@@ -78,18 +95,15 @@ async function confirmCheckin(token, adults, children, notes) {
   const button = document.querySelector("#approvalForm button");
   if (button) { button.disabled = true; button.textContent = "Recording check-in…"; }
   try {
-    const url = new URL(CHECKIN_API_URL);
-    url.searchParams.set("security", "recordCheckin");
-    url.searchParams.set("pin", state.pin);
-    url.searchParams.set("checkin", token);
-    url.searchParams.set("eventDay", state.eventDay);
-    url.searchParams.set("adults", adults);
-    url.searchParams.set("children", children);
-    url.searchParams.set("notes", notes);
-    const response = await fetch(url, { cache: "no-store" });
-    if (!response.ok) throw new Error("The check-in service could not be reached.");
-    const payload = await response.json();
-    if (!payload.success) throw new Error(payload.error || "The check-in service rejected this entry.");
+    submitCheckinWrite({ security:"recordCheckin", pin:state.pin, checkin:token, eventDay:state.eventDay, adults, children, notes });
+    showResult("pending", "Recording check-in…", "Saving the arrival in the guest list.");
+    let confirmation;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      await new Promise(resolve => window.setTimeout(resolve, 700));
+      confirmation = await lookupToken(token);
+      if (confirmation.checkinState && confirmation.checkinState.checkedIn) break;
+    }
+    if (!confirmation || !confirmation.checkinState || !confirmation.checkinState.checkedIn) throw new Error("The guest list did not confirm the check-in.");
     showResult("approved", `Checked in for ${state.eventDay} — welcome!`, "The actual arrival count and any note are now recorded in the Check-in Log.");
     if (state.scannerMode) window.setTimeout(resetForNextScan, 1800);
   } catch (error) { showResult("rejected", "Could not record check-in", error.message || "Please check the connection and try again."); }
