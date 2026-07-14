@@ -58,14 +58,6 @@ function doGet(e) {
     });
   }
 
-  if (checkinToken) {
-    const guest = records.find(row => String(row["Check-in Token"]).trim() === checkinToken);
-    return jsonOutput({
-      success: !!guest,
-      guest: guest ? toPublicGuest(guest) : null
-    });
-  }
-
   return jsonOutput({
     success: true,
     message: "Use a private invitation token to load invitation details."
