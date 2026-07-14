@@ -28,15 +28,20 @@ function statusClass(status) {
 
 function buildMessage(guest, templateName = "pranam") {
   const greetingName = guest.contactPerson || `${guest.familyName} Family`;
-  const senderName = senderState.actor === "Deepali" ? "दीपाली" : "इंद्रदीप";
+  const senderName = senderState.actor === "Deepali" ? "दीपाली" : "इंदरदीप";
   const englishSender = senderState.actor === "Deepali" ? "Deepali" : "Inderdip";
   const link = guest.invitationUrl;
+  const marathiFamilyGreeting = `${greetingName} जी आणि आपल्या परिवारातील सर्व आदरणीय ज्येष्ठ व प्रियजनांनो`;
+  const englishFamilyGreeting = `${greetingName} ji, respected elders and every member of your family`;
+  const marathiFamilyNote = "हा स्नेहपूर्ण संदेश आपल्या घरातील सर्व मान्यवर ज्येष्ठ, प्रियजन आणि परिवारातील प्रत्येक सदस्यासाठी आहे. 🌸";
+  const englishFamilyNote = "This heartfelt invitation is for the respected elders, loved ones and every member of your family. 🌸";
 
   const messages = {
     pranam: [
-      `🙏 नमस्कार ${greetingName} जी, सादर प्रणाम. 🙏`,
+      `🙏 नमस्कार ${marathiFamilyGreeting}, सादर प्रणाम. 🙏`,
       "",
-      `इंद्रदीप, दीपाली व संपूर्ण परिवाराकडून आपणास व आपल्या परिवारास आमच्या शुभविवाह सोहळ्यास स्नेहपूर्वक आमंत्रण. 💐✨`,
+      `इंदरदीप, दीपाली व संपूर्ण परिवाराकडून आपणास व आपल्या परिवारास आमच्या शुभविवाह सोहळ्यास स्नेहपूर्वक आमंत्रण. 💐✨`,
+      marathiFamilyNote,
       "आपले शुभाशीर्वाद व मंगलकामना आम्हाला लाभल्या तर आम्ही अत्यंत आनंदित होऊ. 🌸",
       "कृपया प्रथम आमचा आमंत्रण व्हिडिओ पाहा. त्यानंतर खालील आपल्या वैयक्तिक निमंत्रण दुव्यावरून संपूर्ण माहिती पाहा व RSVP करा:",
       "",
@@ -44,79 +49,88 @@ function buildMessage(guest, templateName = "pranam") {
       "",
       "आपली प्रेमळ उपस्थिती व आशीर्वाद आम्हांस लाभोत, हीच नम्र प्रार्थना. 🙏🌺",
       "",
-      `🌸🙏 Namaste ${greetingName}, warm pranam from ${englishSender}, Deepali and our families. 🙏🌸`,
+      `🌸🙏 Namaste ${englishFamilyGreeting}, warm pranam from ${englishSender}, Deepali and our families. 🙏🌸`,
       "",
       "With folded hands, we lovingly invite you and your family to our wedding celebration. Your blessings and good wishes would mean the world to us. 💐✨",
+      englishFamilyNote,
       "Please watch our invitation video first, then open your personal invitation link above for all details and RSVP. 🪔",
       "",
       "With love and respect,",
       "Deepali, Inderdip & family 🌺"
     ],
     blessings: [
-      `🌺🙏 नमस्कार ${greetingName} जी, ${senderName} कडून सादर प्रणाम. 🙏🌺`,
+      `🌺🙏 नमस्कार ${marathiFamilyGreeting}, ${senderName} कडून सादर प्रणाम. 🙏🌺`,
       "",
       "परमेश्वराच्या कृपेने आणि आपणा सर्वांच्या शुभाशीर्वादाने आमच्या जीवनातील हा मंगल दिवस साजरा होत आहे. 🪔✨",
       "आपण व आपल्या परिवाराने या आनंदोत्सवात सहभागी होऊन आम्हाला आशीर्वाद द्यावेत, ही विनम्र प्रार्थना. 💐",
+      marathiFamilyNote,
       "कृपया आमचा विवाह-आमंत्रण व्हिडिओ पाहा आणि नंतर आपले वैयक्तिक निमंत्रण येथे उघडा:",
       "",
       link,
       "",
       "आपले प्रेम, प्रार्थना आणि शुभेच्छा आमच्यासाठी अनमोल आहेत. 🌸🙏",
       "",
-      `🌸🙏 Namaste ${greetingName}. With God’s grace and the blessings of our elders, we are beginning this beautiful new chapter. 🪔✨`,
+      `🌸🙏 Namaste ${englishFamilyGreeting}. With God’s grace and the blessings of our elders, we are beginning this beautiful new chapter. 🪔✨`,
       "We humbly invite you and your family to bless our wedding celebration with your presence, prayers and good wishes. 💐",
+      englishFamilyNote,
       "Please watch the invitation video, then open your personal link above for the complete details and RSVP.",
       "",
       "Sadar pranam,",
       "Deepali, Inderdip & family 🙏🌺"
     ],
     family: [
-      `💐 नमस्कार ${greetingName} जी! 🙏`,
+      `💐 नमस्कार ${marathiFamilyGreeting}! 🙏`,
       "",
       "आमच्या दोन्ही परिवारांसाठी हा आनंदाचा, प्रेमाचा आणि मंगल उत्सवाचा क्षण आहे. 🌸✨",
-      "इंद्रदीप व दीपाली यांच्या शुभविवाहासाठी आपणास आणि आपल्या संपूर्ण परिवारास मनःपूर्वक आमंत्रण. 🪔",
+      "इंदरदीप व दीपाली यांच्या शुभविवाहासाठी आपणास आणि आपल्या संपूर्ण परिवारास मनःपूर्वक आमंत्रण. 🪔",
+      marathiFamilyNote,
       "आपली उपस्थिती आणि आशीर्वाद या सोहळ्याला अधिक सुंदर करतील. 🙏",
       "कृपया आमंत्रण व्हिडिओ पाहा आणि आपले वैयक्तिक निमंत्रण येथे उघडा:",
       "",
       link,
       "",
-      `🌸 Namaste ${greetingName}! 🙏`,
+      `🌸 Namaste ${englishFamilyGreeting}! 🙏`,
       "This is a joyful, loving celebration for both our families. We warmly invite you and your entire family to Deepali and Inderdip’s wedding. 💐✨",
+      englishFamilyNote,
       "Your presence and blessings will make this celebration even more beautiful. Please watch the video and open your personal invitation link above for details and RSVP. 🪔",
       "",
       "With love,",
       "Deepali, Inderdip & family 🌺"
     ],
     sacred: [
-      `🙏🌸 आदरणीय ${greetingName} जी, सादर प्रणाम.`,
+      `🙏🌸 आदरणीय ${marathiFamilyGreeting}, सादर प्रणाम.`,
       "",
       "दोन हृदयांच्या नव्या प्रवासाचा हा पवित्र प्रारंभ आपल्या आशीर्वादाशिवाय पूर्ण होऊ शकत नाही. 🪔✨",
       "आमच्या विवाह सोहळ्यास आपण व आपल्या परिवाराने येऊन प्रेम, प्रार्थना आणि मंगलाशीर्वाद द्यावेत, ही नम्र विनंती. 💐",
+      marathiFamilyNote,
       "कृपया विवाहाचा आमंत्रण व्हिडिओ पाहा. त्यानंतर संपूर्ण माहिती व RSVP साठी आपले वैयक्तिक निमंत्रण येथे उघडा:",
       "",
       link,
       "",
       "आपल्या आशीर्वादांची आम्ही मनापासून वाट पाहत आहोत. 🙏🌺",
       "",
-      `🙏🌸 Respected ${greetingName}, warm pranam.`,
+      `🙏🌸 Respected ${englishFamilyGreeting}, warm pranam.`,
       "This sacred beginning of two hearts and two families would feel complete only with your prayers and blessings. 🪔✨",
       "We humbly invite you and your family to our wedding celebration. Please watch the invitation video, then open your personal link above for details and RSVP. 💐",
+      englishFamilyNote,
       "",
       "With folded hands and love,",
       "Deepali, Inderdip & family 🙏"
     ],
     short: [
-      `🙏 नमस्कार ${greetingName} जी, सादर प्रणाम. 🌸`,
+      `🙏 नमस्कार ${marathiFamilyGreeting}, सादर प्रणाम. 🌸`,
       "",
-      "इंद्रदीप, दीपाली व परिवाराकडून आपणास व आपल्या परिवारास आमच्या शुभविवाहाचे मनःपूर्वक आमंत्रण. 💐",
+      "इंदरदीप, दीपाली व परिवाराकडून आपणास व आपल्या परिवारास आमच्या शुभविवाहाचे मनःपूर्वक आमंत्रण. 💐",
+      marathiFamilyNote,
       "कृपया व्हिडिओ पाहा आणि संपूर्ण माहिती व RSVP साठी आपले वैयक्तिक निमंत्रण येथे उघडा:",
       "",
       link,
       "",
       "आपले शुभाशीर्वाद लाभोत. 🙏🪔",
       "",
-      `🙏 Namaste ${greetingName}. Warm pranam from Deepali, Inderdip and family. 🌸`,
+      `🙏 Namaste ${englishFamilyGreeting}. Warm pranam from Deepali, Inderdip and family. 🌸`,
       "We warmly invite you and your family to bless our wedding. Please watch the video and open your personal link above for details and RSVP. 💐✨",
+      englishFamilyNote,
       "",
       "With love and folded hands, 🙏",
       "Deepali, Inderdip & family"
