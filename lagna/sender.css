@@ -59,7 +59,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .side-picker small { margin-top: 3px; color: var(--muted); }
 .side-picker input:checked + span { border-color: var(--wine); background: var(--rose); }
 
-.pin-field, .controls label, .notes-field { display: grid; gap: 7px; color: var(--wine); font-weight: 750; }
+.pin-field, .controls label, .notes-field, .message-choice { display: grid; gap: 7px; color: var(--wine); font-weight: 750; }
 input, textarea { width: 100%; border: 1px solid #cfbec7; border-radius: 12px; background: #fff; color: var(--ink); padding: 13px 14px; outline: none; }
 input:focus, textarea:focus { border-color: var(--wine-soft); box-shadow: 0 0 0 3px rgba(123, 49, 88, 0.12); }
 
@@ -122,6 +122,9 @@ input:focus, textarea:focus { border-color: var(--wine-soft); box-shadow: 0 0 0 
 .send-steps li.done .confirm-button { color: var(--green); border-color: #a9d8bd; }
 
 .message-preview { margin-bottom: 15px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 12px 0; }
+.message-choice { margin: 4px 0 15px; font-size: 0.9rem; }
+.message-choice select { width: 100%; min-height: 46px; border: 1px solid #cfbec7; border-radius: 12px; background: #fff; color: var(--ink); padding: 10px 12px; }
+.message-choice select:focus { border-color: var(--wine-soft); box-shadow: 0 0 0 3px rgba(123, 49, 88, 0.12); outline: none; }
 .message-preview summary { color: var(--wine-soft); font-weight: 750; cursor: pointer; }
 .message-preview pre { margin: 12px 0 0; padding: 12px; overflow-x: auto; border-radius: 12px; white-space: pre-wrap; word-break: break-word; background: #f8f3f5; font: 0.86rem/1.55 inherit; }
 .notes-field { margin-top: 12px; font-size: 0.9rem; }
