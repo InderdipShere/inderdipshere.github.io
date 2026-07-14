@@ -31,7 +31,7 @@ function buildMessage(guest, templateName = "pranam") {
   const familyName = guest.familyName || "आपल्या";
   const senderName = senderState.actor === "Deepali" ? "दीपाली" : "इंदरदीप";
   const coupleNamesMarathi = "दीपाली व इंदरदीप";
-  const coupleNamesEnglish = "Dipali & Indradeep";
+  const coupleNamesEnglish = "Deepali & Inderdip";
   const link = guest.invitationUrl;
   const englishFamilyName = guest.familyName ? `the ${guest.familyName} family` : "your family";
   const marathiFamilyGreeting = `${greetingName} जी आणि ${familyName} परिवारातील सर्व आदरणीय ज्येष्ठ व प्रियजनांनो`;
@@ -40,6 +40,23 @@ function buildMessage(guest, templateName = "pranam") {
   const englishFamilyNote = `This heartfelt invitation is for the respected elders, loved ones and every member of ${englishFamilyName}. 🌸`;
 
   const messages = {
+    ready: [
+      `🙏 नमस्कार ${marathiFamilyGreeting}, सादर प्रणाम. 🌸`,
+      "",
+      `दीपाली व इंदरदीप यांच्या परिवाराकडून आनंदाची बातमी—${familyName} परिवारासाठी आपले वैयक्तिक विवाह निमंत्रण आता तयार आहे. 💐🪔`,
+      "कृपया आमंत्रण व्हिडिओ पुन्हा एकदा पाहा आणि नंतर खालील वैयक्तिक दुव्यावरून आपले निमंत्रण उघडा, संपूर्ण माहिती पहा व PDF डाउनलोड करा:",
+      "",
+      link,
+      "",
+      "आपले शुभाशीर्वाद आम्हाला लाभोत, ही नम्र प्रार्थना. 🙏🌺",
+      "",
+      `🙏 Namaste ${englishFamilyGreeting}. Your personal wedding invitation for ${englishFamilyName} is now ready. 💐🪔`,
+      "Please watch the invitation video once more, then open your personal link above to view all details and download your invitation PDF.",
+      englishFamilyNote,
+      "",
+      "With love and folded hands,",
+      "Deepali & Inderdip with family 🌸"
+    ],
     pranam: [
       `🙏 नमस्कार ${marathiFamilyGreeting}, सादर प्रणाम. 🙏`,
       "",
@@ -59,7 +76,7 @@ function buildMessage(guest, templateName = "pranam") {
       "Please watch our invitation video first, then open your personal invitation link above for all details and RSVP. 🪔",
       "",
       "With love and respect,",
-      "Dipali, Indradeep & family 🌺"
+      "Deepali, Inderdip & family 🌺"
     ],
     blessings: [
       `🌺🙏 नमस्कार ${marathiFamilyGreeting}, ${senderName} कडून सादर प्रणाम. 🙏🌺`,
@@ -79,7 +96,7 @@ function buildMessage(guest, templateName = "pranam") {
       "Please watch the invitation video, then open your personal link above for the complete details and RSVP.",
       "",
       "Sadar pranam,",
-      "Dipali, Indradeep & family 🙏🌺"
+      "Deepali, Inderdip & family 🙏🌺"
     ],
     family: [
       `💐 नमस्कार ${marathiFamilyGreeting}! 🙏`,
@@ -98,7 +115,7 @@ function buildMessage(guest, templateName = "pranam") {
       "Your presence and blessings will make this celebration even more beautiful. Please watch the video and open your personal invitation link above for details and RSVP. 🪔",
       "",
       "With love,",
-      "Dipali, Indradeep & family 🌺"
+      "Deepali, Inderdip & family 🌺"
     ],
     sacred: [
       `🙏🌸 आदरणीय ${marathiFamilyGreeting}, सादर प्रणाम.`,
@@ -118,7 +135,7 @@ function buildMessage(guest, templateName = "pranam") {
       englishFamilyNote,
       "",
       "With folded hands and love,",
-      "Dipali, Indradeep & family 🙏"
+      "Deepali, Inderdip & family 🙏"
     ],
     short: [
       `🙏 नमस्कार ${marathiFamilyGreeting}, सादर प्रणाम. 🌸`,
@@ -136,7 +153,7 @@ function buildMessage(guest, templateName = "pranam") {
       englishFamilyNote,
       "",
       "With love and folded hands, 🙏",
-      "Dipali, Indradeep & family"
+      "Deepali, Inderdip & family"
     ]
   };
 
@@ -255,7 +272,8 @@ function renderSender() {
 function createGuestCard(guest) {
   const template = document.getElementById("guestCardTemplate");
   const card = template.content.firstElementChild.cloneNode(true);
-  const selectedTemplate = senderState.messageTemplates[guest.inviteToken] || "pranam";
+  const selectedTemplate = senderState.messageTemplates[guest.inviteToken]
+    || (guest.deliveryType === "Personal Link Ready" ? "ready" : "pranam");
   let message = buildMessage(guest, selectedTemplate);
   const hasPhone = /^\d{10,15}$/.test(guest.whatsappNumber || "");
   const videoDone = guest.videoSent === "Yes";

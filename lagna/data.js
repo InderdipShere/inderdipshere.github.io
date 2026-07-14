@@ -214,6 +214,10 @@ function loadGuest() {
   const guest = guests[inviteToken];
   const box = document.getElementById("personalWelcome");
   currentGuest = guest || null;
+  const requestForm = document.getElementById("generalInviteRequest");
+  const rsvpForm = document.getElementById("rsvpForm");
+  if (requestForm) requestForm.hidden = !!guest || !!inviteToken;
+  if (rsvpForm) rsvpForm.hidden = !guest && !inviteToken;
 
   if (guest) {
     const rsvpStatus = guest.rsvp || "Pending";
@@ -250,6 +254,40 @@ function loadGuest() {
     prefillRsvpForm(null);
     updateMemoryLinks(null);
     renderInvitationDownloadPanel(null);
+  }
+}
+
+async function submitGeneralInviteRequest(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const status = document.getElementById("requestInviteStatus");
+  const button = form.querySelector("button[type='submit']");
+  const payload = {
+    action: "requestInvite",
+    name: document.getElementById("requestName").value.trim(),
+    familyName: document.getElementById("requestFamilyName").value.trim(),
+    phone: document.getElementById("requestPhone").value.trim(),
+    side: document.getElementById("requestSide").value
+  };
+  if (!payload.name || !payload.familyName || !payload.phone || !payload.side) {
+    status.textContent = "Please complete all fields before requesting your invitation.";
+    return;
+  }
+  button.disabled = true;
+  status.textContent = "Submitting your request…";
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    form.reset();
+    status.textContent = "Thank you. Your request is waiting for approval. You will receive your personalized invitation link directly on WhatsApp once it is ready.";
+  } catch (error) {
+    status.textContent = "We could not submit your request right now. Please try again shortly.";
+  } finally {
+    button.disabled = false;
   }
 }
 
@@ -698,5 +736,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const rsvpForm = document.getElementById("rsvpForm");
   if (rsvpForm) {
     rsvpForm.addEventListener("submit", submitRsvp);
+  }
+  const generalInviteRequest = document.getElementById("generalInviteRequest");
+  if (generalInviteRequest) {
+    generalInviteRequest.addEventListener("submit", submitGeneralInviteRequest);
   }
 });

@@ -243,6 +243,22 @@
       <p>
         Submit or update your RSVP using the same invitation link. Adult and children counts are entered here by the guest.
       </p>
+      <form id="generalInviteRequest" class="form" hidden>
+        <h3>Request your personalized invitation</h3>
+        <p>Your request will be reviewed by the wedding family. Once approved, your personal invitation link will be sent directly to your WhatsApp number.</p>
+        <label>Your Name <input id="requestName" type="text" required placeholder="Your full name"></label>
+        <label>Family Name <input id="requestFamilyName" type="text" required placeholder="Example: Patil Family"></label>
+        <label>WhatsApp Number <input id="requestPhone" type="tel" required inputmode="tel" placeholder="+91 98765 43210"></label>
+        <label>Invited From
+          <select id="requestSide" required>
+            <option value="">Select side</option>
+            <option value="Groom">Groom side</option>
+            <option value="Bride">Bride side</option>
+          </select>
+        </label>
+        <button class="btn primary" type="submit">Request Personalized Invitation</button>
+        <p id="requestInviteStatus" class="form-status" aria-live="polite"></p>
+      </form>
       <form id="rsvpForm" class="form">
         <label>Family Name <input id="rsvpFamilyName" type="text" placeholder="Example: Patil Family"></label>
         <label>Adults <input id="rsvpAdults" type="number" min="0" placeholder="0"></label>
