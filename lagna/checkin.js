@@ -1,0 +1,101 @@
+const CHECKIN_API_URL = "https://script.google.com/macros/s/AKfycbzFTHa53ENMn0udXLJ1O7IqqgkxJ4cTEHNZFm8wkpu91gHT-s3Ud7uBzqfCW4qd_gPb/exec";
+const CHECKIN_STORAGE_KEY = "lagna-checkin-pin";
+const state = { pin: "", stream: null, detector: null, scanning: false, lastToken: "" };
+
+function extractToken(value) {
+  const match = String(value || "").toUpperCase().match(/CHK-[A-Z0-9-]+/);
+  return match ? match[0] : "";
+}
+
+function setLoginStatus(message) { document.getElementById("loginStatus").textContent = message; }
+
+async function lookupToken(token) {
+  const url = new URL(CHECKIN_API_URL);
+  url.searchParams.set("security", "lookup");
+  url.searchParams.set("pin", state.pin);
+  url.searchParams.set("checkin", token);
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Could not contact the guest list.");
+  return response.json();
+}
+
+function showResult(type, title, message, guest) {
+  const result = document.getElementById("result");
+  result.className = `result show ${type}`;
+  const details = guest ? `
+    <div class="guest-summary">
+      <div><span>Family</span><strong>${escapeHtml(guest["Family Name"] || "—")}</strong></div>
+      <div><span>Contact</span><strong>${escapeHtml(guest["Contact Person"] || "—")}</strong></div>
+      <div><span>Adults</span><strong>${escapeHtml(guest.Adults || 0)}</strong></div>
+      <div><span>Children</span><strong>${escapeHtml(guest.Children || 0)}</strong></div>
+      <div><span>Total expected</span><strong>${escapeHtml(guest.Total || 0)}</strong></div>
+      <div><span>RSVP</span><strong>${escapeHtml(guest.RSVP || "Pending")}</strong></div>
+    </div>` : "";
+  result.innerHTML = `<h2>${escapeHtml(title)}</h2><p>${escapeHtml(message)}</p>${details}`;
+}
+
+function escapeHtml(value) { const box = document.createElement("div"); box.textContent = String(value); return box.innerHTML; }
+
+async function submitToken(rawToken, markPresent = false) {
+  const token = extractToken(rawToken);
+  if (!token) { showResult("rejected", "QR code not recognised", "Please scan the family QR pass again, or enter the CHK token printed on the pass."); return; }
+  try {
+    const payload = await lookupToken(token);
+    if (!payload.success) { showResult("rejected", "Not approved", payload.error || "This QR pass is not valid for check-in."); return; }
+    const guest = payload.guest;
+    if (String(guest.RSVP).toLowerCase() !== "done" && String(guest.RSVP).toLowerCase() !== "yes") {
+      showResult("pending", "RSVP not confirmed", "This family does not yet have an approved attending RSVP.", guest); return;
+    }
+    const alreadyIn = String(guest["Checked In"] || "").toLowerCase() === "yes";
+    showResult("approved", alreadyIn ? "Already checked in" : "Approved — welcome!", alreadyIn ? "This family has already been marked present." : "Family details confirmed. Marking this family present now.", guest);
+    if (markPresent && !alreadyIn) {
+      await fetch(CHECKIN_API_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ action:"checkin", pin:state.pin, checkin:token }) });
+    }
+  } catch (error) { showResult("rejected", "Connection problem", error.message || "Please try again."); }
+}
+
+async function scanFrame() {
+  if (!state.scanning || !state.detector) return;
+  const video = document.getElementById("camera");
+  try {
+    const codes = await state.detector.detect(video);
+    if (codes.length) {
+      const token = extractToken(codes[0].rawValue);
+      if (token && token !== state.lastToken) { state.lastToken = token; await submitToken(token, true); }
+    }
+  } catch (_) { /* A frame can be unavailable while the camera starts. */ }
+  if (state.scanning) requestAnimationFrame(scanFrame);
+}
+
+async function startCamera() {
+  if (!("BarcodeDetector" in window)) { document.getElementById("cameraStatus").textContent = "Camera scanning is not supported by this browser. Use the manual token field below."; return; }
+  try {
+    state.stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" } }, audio:false });
+    const video = document.getElementById("camera"); video.srcObject = state.stream; await video.play();
+    state.detector = new BarcodeDetector({ formats:["qr_code"] }); state.scanning = true;
+    document.getElementById("cameraStatus").textContent = "Camera ready — hold the family QR pass inside the frame.";
+    document.getElementById("cameraButton").textContent = "Camera scanning"; document.getElementById("cameraButton").disabled = true;
+    requestAnimationFrame(scanFrame);
+  } catch (error) { document.getElementById("cameraStatus").textContent = "Camera permission was not granted. Use the manual token field below."; }
+}
+
+function lockCheckin() {
+  state.scanning = false; if (state.stream) state.stream.getTracks().forEach(track => track.stop()); state.stream = null;
+  localStorage.removeItem(CHECKIN_STORAGE_KEY); state.pin = "";
+  document.getElementById("checkinApp").hidden = true; document.getElementById("loginPanel").hidden = false; document.getElementById("checkinPin").value = "";
+}
+
+document.getElementById("loginForm").addEventListener("submit", async event => {
+  event.preventDefault(); state.pin = document.getElementById("checkinPin").value.trim();
+  if (!/^\d{6,12}$/.test(state.pin)) { setLoginStatus("Enter the six-digit check-in PIN."); return; }
+  try {
+    const url = new URL(CHECKIN_API_URL); url.searchParams.set("security","lookup"); url.searchParams.set("pin",state.pin); url.searchParams.set("checkin","CHK-PIN-CHECK");
+    const response = await fetch(url); const payload = await response.json();
+    if (payload.error === "Invalid check-in PIN") { setLoginStatus("That PIN is not valid."); return; }
+    localStorage.setItem(CHECKIN_STORAGE_KEY, state.pin); document.getElementById("loginPanel").hidden = true; document.getElementById("checkinApp").hidden = false;
+  } catch (_) { setLoginStatus("Could not reach the guest list. Check the connection."); }
+});
+document.getElementById("manualForm").addEventListener("submit", event => { event.preventDefault(); submitToken(document.getElementById("tokenInput").value, true); });
+document.getElementById("cameraButton").addEventListener("click", startCamera);
+document.getElementById("lockButton").addEventListener("click", lockCheckin);
+const savedPin = localStorage.getItem(CHECKIN_STORAGE_KEY); if (savedPin) document.getElementById("checkinPin").value = savedPin;

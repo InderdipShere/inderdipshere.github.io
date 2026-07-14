@@ -1,6 +1,7 @@
 const SHEET_NAME = "Guest Master List";
 const BLESSINGS_SHEET_NAME = "Blessings";
 const SENDER_PIN_PROPERTY = "INVITATION_SENDER_PIN";
+const CHECKIN_PIN_PROPERTY = "WEDDING_CHECKIN_PIN";
 const INVITATION_SITE_URL = "https://inderdipshere.github.io/lagna/";
 const SENDER_HEADERS = [
   "Invitation Send Status",
@@ -16,11 +17,13 @@ const REQUEST_HEADERS = [
   "Request Notes",
   "Invitation Delivery Type"
 ];
+const CHECKIN_HEADERS = ["Checked In At"];
 
 function doGet(e) {
   const health = String(e.parameter.health || "").trim();
   const inviteToken = String(e.parameter.invite || "").trim();
   const checkinToken = String(e.parameter.checkin || "").trim();
+  const securityAction = String(e.parameter.security || "").trim();
   const senderAction = String(e.parameter.sender || "").trim();
   const sheet = getGuestSheet();
   const records = readRecords(sheet);
@@ -37,6 +40,14 @@ function doGet(e) {
 
   if (senderAction) {
     return getSenderGuests(e.parameter);
+  }
+
+  if (securityAction === "lookup") {
+    if (!validateCheckinPin(e.parameter.pin)) {
+      return jsonOutput({ success: false, error: "Invalid check-in PIN" });
+    }
+    const guest = records.find(row => String(row["Check-in Token"]).trim() === checkinToken);
+    return jsonOutput({ success: !!guest, guest: guest ? toPublicGuest(guest) : null });
   }
 
   if (inviteToken) {
@@ -265,8 +276,8 @@ function toSenderGuest(record) {
     linkSent: normalizeYesNo(record["Link Sent"]),
     sentBy: String(record["Invitation Sent By"] || "").trim(),
     sentAt: formatSheetDate(record["Invitation Sent At"]),
-    notes: String(record["Invitation Send Notes"] || "").trim()
-    ,deliveryType: String(record["Invitation Delivery Type"] || "Initial Invitation").trim()
+    notes: String(record["Invitation Send Notes"] || "").trim(),
+    deliveryType: String(record["Invitation Delivery Type"] || "Initial Invitation").trim()
   };
 }
 
@@ -276,7 +287,7 @@ function ensureSenderColumns(sheet) {
 
 function ensureWorkflowColumns(sheet) {
   const table = readTable(sheet);
-  const missingHeaders = SENDER_HEADERS.concat(REQUEST_HEADERS).filter(header => table.headers.indexOf(header) === -1);
+  const missingHeaders = SENDER_HEADERS.concat(REQUEST_HEADERS, CHECKIN_HEADERS).filter(header => table.headers.indexOf(header) === -1);
   if (!missingHeaders.length) return;
 
   const startColumn = sheet.getLastColumn() + 1;
@@ -312,7 +323,7 @@ function onEdit(e) {
   const row = range.getRow();
   const inviteColumn = headers.indexOf("Invite Token") + 1;
   if (!sheet.getRange(row, inviteColumn).getValue()) {
-    const token = makeToken("INV");
+    const token = makeUniqueToken("INV", getExistingTokenSet(readTable(sheet).records, "Invite Token"));
     sheet.getRange(row, inviteColumn).setValue(token);
     setCell(sheet, headers, row, "Invitation Send Status", "Pending");
     setCell(sheet, headers, row, "Video Sent", "No");
@@ -468,6 +479,10 @@ function updateRsvp(body) {
 function markCheckedIn(body) {
   const checkinToken = String(body.checkin || "").trim();
 
+  if (!validateCheckinPin(body.pin)) {
+    return jsonOutput({ success: false, error: "Invalid check-in PIN" });
+  }
+
   if (!checkinToken) {
     return jsonOutput({ success: false, error: "Missing check-in token" });
   }
@@ -481,12 +496,34 @@ function markCheckedIn(body) {
   }
 
   const rowNumber = rowIndex + 2;
+  const wasCheckedIn = String(table.records[rowIndex]["Checked In"] || "").trim() === "Yes";
   setCell(sheet, table.headers, rowNumber, "Checked In", "Yes");
+  if (!wasCheckedIn && table.headers.indexOf("Checked In At") !== -1) {
+    setCell(sheet, table.headers, rowNumber, "Checked In At", new Date());
+  }
 
   return jsonOutput({
     success: true,
-    guest: toPublicGuest(readRecords(sheet)[rowIndex])
+    guest: toPublicGuest(readRecords(sheet)[rowIndex]),
+    alreadyCheckedIn: wasCheckedIn
   });
+}
+
+function setupCheckinAccess() {
+  const properties = PropertiesService.getScriptProperties();
+  let pin = String(properties.getProperty(CHECKIN_PIN_PROPERTY) || "").trim();
+  if (!/^\d{6,12}$/.test(pin)) {
+    pin = String(Math.floor(100000 + Math.random() * 900000));
+    properties.setProperty(CHECKIN_PIN_PROPERTY, pin);
+  }
+  ensureWorkflowColumns(getGuestSheet());
+  Logger.log("Wedding check-in PIN: " + pin);
+  return pin;
+}
+
+function validateCheckinPin(pin) {
+  const expected = String(PropertiesService.getScriptProperties().getProperty(CHECKIN_PIN_PROPERTY) || "").trim();
+  return /^\d{6,12}$/.test(expected) && String(pin || "").trim() === expected;
 }
 
 function generateMissingTokens() {
