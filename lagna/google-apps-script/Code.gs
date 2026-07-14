@@ -17,7 +17,7 @@ const REQUEST_HEADERS = [
   "Request Notes",
   "Invitation Delivery Type"
 ];
-const CHECKIN_HEADERS = ["Checked In At"];
+const CHECKIN_HEADERS = ["Checked In At", "Checked In Adults", "Checked In Children", "Checked In Total", "Check-in Notes"];
 
 function doGet(e) {
   const health = String(e.parameter.health || "").trim();
@@ -470,6 +470,9 @@ function updateRsvp(body) {
 
 function markCheckedIn(body) {
   const checkinToken = String(body.checkin || "").trim();
+  const adults = parseCheckinCount(body.adults);
+  const children = parseCheckinCount(body.children);
+  const notes = String(body.notes || "").trim().substring(0, 500);
 
   if (!validateCheckinPin(body.pin)) {
     return jsonOutput({ success: false, error: "Invalid check-in PIN" });
@@ -489,16 +492,30 @@ function markCheckedIn(body) {
 
   const rowNumber = rowIndex + 2;
   const wasCheckedIn = String(table.records[rowIndex]["Checked In"] || "").trim() === "Yes";
+  const expectedAdults = parseCheckinCount(table.records[rowIndex]["Adults"]);
+  const expectedChildren = parseCheckinCount(table.records[rowIndex]["Children"]);
+  if ((adults !== expectedAdults || children !== expectedChildren) && !notes) {
+    return jsonOutput({ success: false, error: "Add a note when the actual guest count differs from the RSVP." });
+  }
   setCell(sheet, table.headers, rowNumber, "Checked In", "Yes");
   if (!wasCheckedIn && table.headers.indexOf("Checked In At") !== -1) {
     setCell(sheet, table.headers, rowNumber, "Checked In At", new Date());
   }
+  setCell(sheet, table.headers, rowNumber, "Checked In Adults", adults);
+  setCell(sheet, table.headers, rowNumber, "Checked In Children", children);
+  setCell(sheet, table.headers, rowNumber, "Checked In Total", adults + children);
+  if (notes) setCell(sheet, table.headers, rowNumber, "Check-in Notes", notes);
 
   return jsonOutput({
     success: true,
     guest: toPublicGuest(readRecords(sheet)[rowIndex]),
     alreadyCheckedIn: wasCheckedIn
   });
+}
+
+function parseCheckinCount(value) {
+  const count = Number(value);
+  return isFinite(count) && count >= 0 ? Math.floor(count) : 0;
 }
 
 function setupCheckinAccess() {

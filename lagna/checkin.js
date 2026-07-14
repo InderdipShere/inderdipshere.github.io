@@ -20,7 +20,7 @@ async function lookupToken(token) {
   return response.json();
 }
 
-function showResult(type, title, message, guest) {
+function showResult(type, title, message, guest, showApproval = false) {
   const result = document.getElementById("result");
   result.className = `result show ${type}`;
   const details = guest ? `
@@ -32,12 +32,28 @@ function showResult(type, title, message, guest) {
       <div><span>Total expected</span><strong>${escapeHtml(guest.Total || 0)}</strong></div>
       <div><span>RSVP</span><strong>${escapeHtml(guest.RSVP || "Pending")}</strong></div>
     </div>` : "";
-  result.innerHTML = `<h2>${escapeHtml(title)}</h2><p>${escapeHtml(message)}</p>${details}`;
+  const approval = showApproval && guest ? `
+    <form id="approvalForm" class="approval-form">
+      <h3>Confirm actual arrival</h3>
+      <div class="count-fields">
+        <label>Adults<input id="actualAdults" type="number" min="0" inputmode="numeric" value="${escapeHtml(guest.Adults || 0)}" /></label>
+        <label>Children<input id="actualChildren" type="number" min="0" inputmode="numeric" value="${escapeHtml(guest.Children || 0)}" /></label>
+      </div>
+      <label>Note if count differs<textarea id="checkinNotes" rows="2" maxlength="500" placeholder="Example: one adult could not attend"></textarea></label>
+      <button type="submit">Yes, check in this family</button>
+    </form>` : "";
+  result.innerHTML = `<h2>${escapeHtml(title)}</h2><p>${escapeHtml(message)}</p>${details}${approval}`;
+  if (showApproval && guest) {
+    document.getElementById("approvalForm").addEventListener("submit", event => {
+      event.preventDefault();
+      confirmCheckin(guest["Check-in Token"], document.getElementById("actualAdults").value, document.getElementById("actualChildren").value, document.getElementById("checkinNotes").value);
+    });
+  }
 }
 
 function escapeHtml(value) { const box = document.createElement("div"); box.textContent = String(value); return box.innerHTML; }
 
-async function submitToken(rawToken, markPresent = false) {
+async function submitToken(rawToken) {
   const token = extractToken(rawToken);
   if (!token) { showResult("rejected", "QR code not recognised", "Please scan the family QR pass again, or enter the CHK token printed on the pass."); return; }
   try {
@@ -48,11 +64,17 @@ async function submitToken(rawToken, markPresent = false) {
       showResult("pending", "RSVP not confirmed", "This family does not yet have an approved attending RSVP.", guest); return;
     }
     const alreadyIn = String(guest["Checked In"] || "").toLowerCase() === "yes";
-    showResult("approved", alreadyIn ? "Already checked in" : "Approved — welcome!", alreadyIn ? "This family has already been marked present." : "Family details confirmed. Marking this family present now.", guest);
-    if (markPresent && !alreadyIn) {
-      await fetch(CHECKIN_API_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ action:"checkin", pin:state.pin, checkin:token }) });
-    }
+    showResult("approved", alreadyIn ? "Already checked in" : "Approved — please confirm", alreadyIn ? "This family has already been marked present." : "Review the expected guests below. Adjust only if the actual arrival count differs, then confirm.", guest, !alreadyIn);
   } catch (error) { showResult("rejected", "Connection problem", error.message || "Please try again."); }
+}
+
+async function confirmCheckin(token, adults, children, notes) {
+  const button = document.querySelector("#approvalForm button");
+  if (button) { button.disabled = true; button.textContent = "Recording check-in…"; }
+  try {
+    await fetch(CHECKIN_API_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ action:"checkin", pin:state.pin, checkin:token, adults, children, notes }) });
+    showResult("approved", "Checked in — welcome!", "The family’s arrival and actual count have been recorded in the guest sheet.");
+  } catch (_) { showResult("rejected", "Could not record check-in", "Please check the connection and try again."); }
 }
 
 async function scanFrame() {
@@ -62,7 +84,7 @@ async function scanFrame() {
     const codes = await state.detector.detect(video);
     if (codes.length) {
       const token = extractToken(codes[0].rawValue);
-      if (token && token !== state.lastToken) { state.lastToken = token; await submitToken(token, true); }
+      if (token && token !== state.lastToken) { state.lastToken = token; await submitToken(token); }
     }
   } catch (_) { /* A frame can be unavailable while the camera starts. */ }
   if (state.scanning) requestAnimationFrame(scanFrame);
@@ -93,12 +115,12 @@ async function startDedicatedScanner() {
     state.qrReader = new Html5Qrcode("qrReader");
     await state.qrReader.start(
       { facingMode: { exact: "environment" } },
-      { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1 },
+      { fps: 12, qrbox: viewfinder => ({ width: Math.min(viewfinder.width * 0.86, 420), height: Math.min(viewfinder.width * 0.86, 420) }), aspectRatio: 1, disableFlip: false },
       async decodedText => {
         const token = extractToken(decodedText);
         if (!token || token === state.lastToken) return;
         state.lastToken = token;
-        await submitToken(token, true);
+        await submitToken(token);
       },
       () => {}
     );
@@ -127,10 +149,10 @@ document.getElementById("loginForm").addEventListener("submit", async event => {
     const response = await fetch(url); const payload = await response.json();
     if (payload.error === "Invalid check-in PIN") { setLoginStatus("That PIN is not valid."); return; }
     localStorage.setItem(CHECKIN_STORAGE_KEY, state.pin); document.getElementById("loginPanel").hidden = true; document.getElementById("checkinApp").hidden = false;
-    if (state.pendingToken) submitToken(state.pendingToken, true);
+    if (state.pendingToken) submitToken(state.pendingToken);
   } catch (_) { setLoginStatus("Could not reach the guest list. Check the connection."); }
 });
-document.getElementById("manualForm").addEventListener("submit", event => { event.preventDefault(); submitToken(document.getElementById("tokenInput").value, true); });
+document.getElementById("manualForm").addEventListener("submit", event => { event.preventDefault(); submitToken(document.getElementById("tokenInput").value); });
 document.getElementById("cameraButton").addEventListener("click", startCamera);
 document.getElementById("lockButton").addEventListener("click", lockCheckin);
 const savedPin = localStorage.getItem(CHECKIN_STORAGE_KEY); if (savedPin) document.getElementById("checkinPin").value = savedPin;
