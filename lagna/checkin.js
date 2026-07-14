@@ -1,7 +1,7 @@
 const CHECKIN_API_URL = "https://script.google.com/macros/s/AKfycbzFTHa53ENMn0udXLJ1O7IqqgkxJ4cTEHNZFm8wkpu91gHT-s3Ud7uBzqfCW4qd_gPb/exec";
 const CHECKIN_STORAGE_KEY = "lagna-checkin-pin";
 const initialCheckinToken = extractToken(new URLSearchParams(window.location.search).get("checkin"));
-const state = { pin: "", eventDay: "Day 1", stream: null, detector: null, qrReader: null, scanning: false, lastToken: "", pendingToken: initialCheckinToken };
+const state = { pin: "", eventDay: "Day 1", stream: null, detector: null, qrReader: null, scanning: false, lastToken: "", pendingToken: initialCheckinToken, scannerMode: false };
 
 function extractToken(value) {
   const match = String(value || "").match(/CHK-[A-Z0-9-]+/i);
@@ -62,6 +62,7 @@ async function submitToken(rawToken) {
   const token = extractToken(rawToken);
   if (!token) { showResult("rejected", "QR code not recognised", "Please scan the family QR pass again, or enter the CHK token printed on the pass."); return; }
   try {
+    showResult("pending", "Verifying QR invitation…", "Checking the family pass securely with the guest list.");
     const payload = await lookupToken(token);
     if (!payload.success) { showResult("rejected", "Not approved", payload.error || "This QR pass is not valid for check-in."); return; }
     const guest = payload.guest;
@@ -78,8 +79,29 @@ async function confirmCheckin(token, adults, children, notes) {
   if (button) { button.disabled = true; button.textContent = "Recording check-in…"; }
   try {
     await fetch(CHECKIN_API_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ action:"checkin", pin:state.pin, checkin:token, eventDay:state.eventDay, adults, children, notes }) });
-    showResult("approved", `Checked in for ${state.eventDay} — welcome!`, "The actual arrival count and any note have been recorded in the Check-in Log.");
-  } catch (_) { showResult("rejected", "Could not record check-in", "Please check the connection and try again."); }
+    showResult("pending", "Recording check-in…", "Confirming that the entry has reached the Check-in Log.");
+    let confirmation;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      await new Promise(resolve => window.setTimeout(resolve, 900));
+      confirmation = await lookupToken(token);
+      if (confirmation.checkinState && confirmation.checkinState.checkedIn) break;
+    }
+    if (!confirmation || !confirmation.checkinState || !confirmation.checkinState.checkedIn) throw new Error("The guest list did not confirm the check-in.");
+    showResult("approved", `Checked in for ${state.eventDay} — welcome!`, "The actual arrival count and any note are now recorded in the Check-in Log.");
+    if (state.scannerMode) window.setTimeout(resetForNextScan, 1800);
+  } catch (error) { showResult("rejected", "Could not record check-in", error.message || "Please check the connection and try again."); }
+}
+
+function resetForNextScan() {
+  if (!state.scannerMode) return;
+  state.lastToken = "";
+  showResult("pending", "Ready for next family", "Hold the next QR pass inside the scanner square.");
+  if (state.qrReader) {
+    state.qrReader.resume().catch(() => {});
+  } else {
+    state.scanning = true;
+    requestAnimationFrame(scanFrame);
+  }
 }
 
 async function scanFrame() {
@@ -89,13 +111,14 @@ async function scanFrame() {
     const codes = await state.detector.detect(video);
     if (codes.length) {
       const token = extractToken(codes[0].rawValue);
-      if (token && token !== state.lastToken) { state.lastToken = token; await submitToken(token); }
+      if (token && token !== state.lastToken) { state.lastToken = token; state.scanning = false; await submitToken(token); }
     }
   } catch (_) { /* A frame can be unavailable while the camera starts. */ }
   if (state.scanning) requestAnimationFrame(scanFrame);
 }
 
 async function startCamera() {
+  state.scannerMode = true;
   if (window.Html5Qrcode) {
     await startDedicatedScanner();
     return;
@@ -125,6 +148,7 @@ async function startDedicatedScanner() {
         const token = extractToken(decodedText);
         if (!token || token === state.lastToken) return;
         state.lastToken = token;
+        state.qrReader.pause(true);
         await submitToken(token);
       },
       () => {}
@@ -143,6 +167,7 @@ function lockCheckin() {
   state.scanning = false; if (state.stream) state.stream.getTracks().forEach(track => track.stop()); state.stream = null;
   if (state.qrReader) state.qrReader.stop().catch(() => {}); state.qrReader = null;
   localStorage.removeItem(CHECKIN_STORAGE_KEY); state.pin = "";
+  state.scannerMode = false;
   document.getElementById("checkinApp").hidden = true; document.getElementById("loginPanel").hidden = false; document.getElementById("checkinPin").value = "";
   document.querySelector(".camera-panel").hidden = false;
   document.querySelector(".manual-panel").hidden = false;
