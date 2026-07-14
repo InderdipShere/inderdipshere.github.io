@@ -1,7 +1,7 @@
 const CHECKIN_API_URL = "https://script.google.com/macros/s/AKfycbzFTHa53ENMn0udXLJ1O7IqqgkxJ4cTEHNZFm8wkpu91gHT-s3Ud7uBzqfCW4qd_gPb/exec";
 const CHECKIN_STORAGE_KEY = "lagna-checkin-pin";
 const initialCheckinToken = extractToken(new URLSearchParams(window.location.search).get("checkin"));
-const state = { pin: "", stream: null, detector: null, qrReader: null, scanning: false, lastToken: "", pendingToken: initialCheckinToken };
+const state = { pin: "", eventDay: "Day 1", stream: null, detector: null, qrReader: null, scanning: false, lastToken: "", pendingToken: initialCheckinToken };
 
 function extractToken(value) {
   const match = String(value || "").toUpperCase().match(/CHK-[A-Z0-9-]+/);
@@ -15,9 +15,14 @@ async function lookupToken(token) {
   url.searchParams.set("security", "lookup");
   url.searchParams.set("pin", state.pin);
   url.searchParams.set("checkin", token);
+  url.searchParams.set("eventDay", state.eventDay);
   const response = await fetch(url);
   if (!response.ok) throw new Error("Could not contact the guest list.");
   return response.json();
+}
+
+function countOptions(selected, maximum) {
+  return Array.from({ length: maximum + 1 }, (_, value) => `<option value="${value}"${Number(selected) === value ? " selected" : ""}>${value}</option>`).join("");
 }
 
 function showResult(type, title, message, guest, showApproval = false) {
@@ -34,13 +39,13 @@ function showResult(type, title, message, guest, showApproval = false) {
     </div>` : "";
   const approval = showApproval && guest ? `
     <form id="approvalForm" class="approval-form">
-      <h3>Confirm actual arrival</h3>
+      <h3>Approve actual arrival</h3>
       <div class="count-fields">
-        <label>Adults<input id="actualAdults" type="number" min="0" inputmode="numeric" value="${escapeHtml(guest.Adults || 0)}" /></label>
-        <label>Children<input id="actualChildren" type="number" min="0" inputmode="numeric" value="${escapeHtml(guest.Children || 0)}" /></label>
+        <label>Adults<select id="actualAdults">${countOptions(guest.Adults, Math.max(30, Number(guest.Adults) || 0))}</select></label>
+        <label>Children<select id="actualChildren">${countOptions(guest.Children, Math.max(20, Number(guest.Children) || 0))}</select></label>
       </div>
       <label>Note if count differs<textarea id="checkinNotes" rows="2" maxlength="500" placeholder="Example: one adult could not attend"></textarea></label>
-      <button type="submit">Yes, check in this family</button>
+      <button type="submit">Approve check-in</button>
     </form>` : "";
   result.innerHTML = `<h2>${escapeHtml(title)}</h2><p>${escapeHtml(message)}</p>${details}${approval}`;
   if (showApproval && guest) {
@@ -63,7 +68,7 @@ async function submitToken(rawToken) {
     if (String(guest.RSVP).toLowerCase() !== "done" && String(guest.RSVP).toLowerCase() !== "yes") {
       showResult("pending", "RSVP not confirmed", "This family does not yet have an approved attending RSVP.", guest); return;
     }
-    const alreadyIn = String(guest["Checked In"] || "").toLowerCase() === "yes";
+    const alreadyIn = !!(payload.checkinState && payload.checkinState.checkedIn);
     showResult("approved", alreadyIn ? "Already checked in" : "Approved — please confirm", alreadyIn ? "This family has already been marked present." : "Review the expected guests below. Adjust only if the actual arrival count differs, then confirm.", guest, !alreadyIn);
   } catch (error) { showResult("rejected", "Connection problem", error.message || "Please try again."); }
 }
@@ -72,8 +77,8 @@ async function confirmCheckin(token, adults, children, notes) {
   const button = document.querySelector("#approvalForm button");
   if (button) { button.disabled = true; button.textContent = "Recording check-in…"; }
   try {
-    await fetch(CHECKIN_API_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ action:"checkin", pin:state.pin, checkin:token, adults, children, notes }) });
-    showResult("approved", "Checked in — welcome!", "The family’s arrival and actual count have been recorded in the guest sheet.");
+    await fetch(CHECKIN_API_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ action:"checkin", pin:state.pin, checkin:token, eventDay:state.eventDay, adults, children, notes }) });
+    showResult("approved", `Checked in for ${state.eventDay} — welcome!`, "The actual arrival count and any note have been recorded in the Check-in Log.");
   } catch (_) { showResult("rejected", "Could not record check-in", "Please check the connection and try again."); }
 }
 
@@ -155,4 +160,5 @@ document.getElementById("loginForm").addEventListener("submit", async event => {
 document.getElementById("manualForm").addEventListener("submit", event => { event.preventDefault(); submitToken(document.getElementById("tokenInput").value); });
 document.getElementById("cameraButton").addEventListener("click", startCamera);
 document.getElementById("lockButton").addEventListener("click", lockCheckin);
+document.getElementById("eventDay").addEventListener("change", event => { state.eventDay = event.target.value; state.lastToken = ""; });
 const savedPin = localStorage.getItem(CHECKIN_STORAGE_KEY); if (savedPin) document.getElementById("checkinPin").value = savedPin;

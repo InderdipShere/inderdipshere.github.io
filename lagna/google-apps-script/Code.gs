@@ -1,5 +1,6 @@
 const SHEET_NAME = "Guest Master List";
 const BLESSINGS_SHEET_NAME = "Blessings";
+const CHECKIN_LOG_SHEET_NAME = "Check-in Log";
 const SENDER_PIN_PROPERTY = "INVITATION_SENDER_PIN";
 const CHECKIN_PIN_PROPERTY = "WEDDING_CHECKIN_PIN";
 const INVITATION_SITE_URL = "https://inderdipshere.github.io/lagna/";
@@ -47,7 +48,12 @@ function doGet(e) {
       return jsonOutput({ success: false, error: "Invalid check-in PIN" });
     }
     const guest = records.find(row => String(row["Check-in Token"]).trim() === checkinToken);
-    return jsonOutput({ success: !!guest, guest: guest ? toPublicGuest(guest) : null });
+    const eventDay = normalizeCheckinEvent(e.parameter.eventDay);
+    return jsonOutput({
+      success: !!guest,
+      guest: guest ? toPublicGuest(guest) : null,
+      checkinState: guest ? getCheckinState(checkinToken, eventDay) : null
+    });
   }
 
   if (inviteToken) {
@@ -473,6 +479,7 @@ function markCheckedIn(body) {
   const adults = parseCheckinCount(body.adults);
   const children = parseCheckinCount(body.children);
   const notes = String(body.notes || "").trim().substring(0, 500);
+  const eventDay = normalizeCheckinEvent(body.eventDay);
 
   if (!validateCheckinPin(body.pin)) {
     return jsonOutput({ success: false, error: "Invalid check-in PIN" });
@@ -491,7 +498,7 @@ function markCheckedIn(body) {
   }
 
   const rowNumber = rowIndex + 2;
-  const wasCheckedIn = String(table.records[rowIndex]["Checked In"] || "").trim() === "Yes";
+  const wasCheckedIn = getCheckinState(checkinToken, eventDay).checkedIn;
   const expectedAdults = parseCheckinCount(table.records[rowIndex]["Adults"]);
   const expectedChildren = parseCheckinCount(table.records[rowIndex]["Children"]);
   if ((adults !== expectedAdults || children !== expectedChildren) && !notes) {
@@ -505,12 +512,66 @@ function markCheckedIn(body) {
   setCell(sheet, table.headers, rowNumber, "Checked In Children", children);
   setCell(sheet, table.headers, rowNumber, "Checked In Total", adults + children);
   if (notes) setCell(sheet, table.headers, rowNumber, "Check-in Notes", notes);
+  appendCheckinLog({
+    eventDay,
+    checkinToken,
+    familyId: table.records[rowIndex]["Family ID"],
+    familyName: table.records[rowIndex]["Family Name"],
+    contactPerson: table.records[rowIndex]["Contact Person"],
+    expectedAdults,
+    expectedChildren,
+    actualAdults: adults,
+    actualChildren: children,
+    notes
+  });
 
   return jsonOutput({
     success: true,
     guest: toPublicGuest(readRecords(sheet)[rowIndex]),
     alreadyCheckedIn: wasCheckedIn
   });
+}
+
+function normalizeCheckinEvent(value) {
+  return String(value || "").trim() === "Day 2" ? "Day 2" : "Day 1";
+}
+
+function getCheckinState(checkinToken, eventDay) {
+  const sheet = getOrCreateCheckinLogSheet();
+  const values = sheet.getDataRange().getValues();
+  const headers = values[0] || [];
+  const tokenColumn = headers.indexOf("Check-in Token");
+  const eventColumn = headers.indexOf("Event Day");
+  const timestampColumn = headers.indexOf("Checked In At");
+  for (let index = values.length - 1; index > 0; index--) {
+    if (String(values[index][tokenColumn] || "").trim() === checkinToken && String(values[index][eventColumn] || "").trim() === eventDay) {
+      return { checkedIn: true, checkedInAt: values[index][timestampColumn] };
+    }
+  }
+  return { checkedIn: false, checkedInAt: "" };
+}
+
+function appendCheckinLog(entry) {
+  const sheet = getOrCreateCheckinLogSheet();
+  sheet.appendRow([
+    new Date(), entry.eventDay, entry.checkinToken, entry.familyId, entry.familyName, entry.contactPerson,
+    entry.expectedAdults, entry.expectedChildren, entry.expectedAdults + entry.expectedChildren,
+    entry.actualAdults, entry.actualChildren, entry.actualAdults + entry.actualChildren, entry.notes
+  ]);
+}
+
+function getOrCreateCheckinLogSheet() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = spreadsheet.getSheetByName(CHECKIN_LOG_SHEET_NAME);
+  if (sheet) return sheet;
+  sheet = spreadsheet.insertSheet(CHECKIN_LOG_SHEET_NAME);
+  sheet.appendRow([
+    "Checked In At", "Event Day", "Check-in Token", "Family ID", "Family Name", "Contact Person",
+    "Expected Adults", "Expected Children", "Expected Total", "Actual Adults", "Actual Children", "Actual Total", "Check-in Notes"
+  ]);
+  sheet.getRange(1, 1, 1, 13).setFontWeight("bold").setBackground("#4b1834").setFontColor("#ffffff");
+  sheet.setFrozenRows(1);
+  return sheet;
 }
 
 function parseCheckinCount(value) {
