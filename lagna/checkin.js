@@ -78,15 +78,10 @@ async function confirmCheckin(token, adults, children, notes) {
   const button = document.querySelector("#approvalForm button");
   if (button) { button.disabled = true; button.textContent = "Recording check-in…"; }
   try {
-    await fetch(CHECKIN_API_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ action:"checkin", pin:state.pin, checkin:token, eventDay:state.eventDay, adults, children, notes }) });
-    showResult("pending", "Recording check-in…", "Confirming that the entry has reached the Check-in Log.");
-    let confirmation;
-    for (let attempt = 0; attempt < 5; attempt++) {
-      await new Promise(resolve => window.setTimeout(resolve, 900));
-      confirmation = await lookupToken(token);
-      if (confirmation.checkinState && confirmation.checkinState.checkedIn) break;
-    }
-    if (!confirmation || !confirmation.checkinState || !confirmation.checkinState.checkedIn) throw new Error("The guest list did not confirm the check-in.");
+    const response = await fetch(CHECKIN_API_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ action:"checkin", pin:state.pin, checkin:token, eventDay:state.eventDay, adults, children, notes }) });
+    if (!response.ok) throw new Error("The check-in service could not be reached.");
+    const payload = await response.json();
+    if (!payload.success) throw new Error(payload.error || "The check-in service rejected this entry.");
     showResult("approved", `Checked in for ${state.eventDay} — welcome!`, "The actual arrival count and any note are now recorded in the Check-in Log.");
     if (state.scannerMode) window.setTimeout(resetForNextScan, 1800);
   } catch (error) { showResult("rejected", "Could not record check-in", error.message || "Please check the connection and try again."); }
