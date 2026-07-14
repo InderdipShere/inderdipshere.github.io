@@ -36,6 +36,60 @@ Use GitHub Pages.
 4. Publish from the main branch.
 5. Your site will become live.
 
+## Private WhatsApp invitation sender
+
+The mobile sender is available at:
+
+`https://inderdipshere.github.io/lagna/sender.html`
+
+It deliberately sends one family at a time. WhatsApp opens the correct number from the `Phone` column, while the sender manually attaches the invitation video stored on the phone. A second action opens a personalized message containing the family invitation URL.
+
+### One-time Google Apps Script setup
+
+1. Copy `google-apps-script/Code.gs` into the Apps Script project attached to the guest-management spreadsheet.
+2. In Apps Script, run `setupInvitationSender()` once. It creates a private eight-digit PIN and writes it to the execution log.
+3. Authorize the spreadsheet changes when Google asks. This adds the sender tracking columns and their dropdown validation.
+4. Create a new web-app deployment (or update the existing deployment) using **Deploy → Manage deployments → Edit → New version → Deploy**.
+5. Keep the existing web-app access setting required by the public RSVP site. Sender data is separately protected by the private PIN.
+
+Do not put the PIN in this repository, a WhatsApp message, or the public website source. Enter it only through the sender page on Inderdip’s and Deepali’s phones.
+
+### Sheet fields used
+
+Existing fields:
+
+- `Family ID`
+- `Family Name`
+- `Side` (`Groom` or `Bride`)
+- `Category`
+- `Contact Person`
+- `Phone`
+- `Invite Token`
+
+Automatically added tracking fields:
+
+- `Invitation Send Status`
+- `Video Sent`
+- `Link Sent`
+- `Invitation Sent By`
+- `Invitation Sent At`
+- `Invitation Send Notes`
+
+### Safe test sequence
+
+1. Open `sender.html` on Inderdip’s phone and choose the Groom side.
+2. Search for the intended test family/contact.
+3. Confirm that the displayed family, contact, and last four digits match before opening WhatsApp.
+4. Send the saved video and tap **I sent the video**.
+5. Open and send the prepared personalized message, then tap **I sent the message**.
+6. Only then tap **Mark invitation complete**.
+
+For local UI development, `sender.html?preview=1` displays a fictional record only when the hostname is `localhost` or `127.0.0.1`. It never calls WhatsApp or updates Google Sheets.
+
+Run the backend mapping and privacy checks with:
+
+`node google-apps-script/Code.test.cjs`
+
 ## Next development stages
 
 1. Replace sample data in `data.js` with your real Google Sheet data.
