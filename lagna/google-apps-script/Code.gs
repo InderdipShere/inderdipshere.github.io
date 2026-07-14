@@ -56,6 +56,10 @@ function doGet(e) {
     });
   }
 
+  if (securityAction === "recordCheckin") {
+    return markCheckedIn(e.parameter);
+  }
+
   if (inviteToken) {
     const guest = records.find(row => String(row["Invite Token"]).trim() === inviteToken);
     return jsonOutput({
