@@ -87,7 +87,15 @@ async function submitToken(rawToken) {
       showResult("pending", "RSVP not confirmed", "This family does not yet have an approved attending RSVP.", guest); return;
     }
     const alreadyIn = !!(payload.checkinState && payload.checkinState.checkedIn);
-    showResult("approved", alreadyIn ? "Already checked in" : "Approved — please confirm", alreadyIn ? "This family has already been marked present." : "Review the expected guests below. Adjust only if the actual arrival count differs, then confirm.", guest, !alreadyIn);
+    if (alreadyIn) {
+      const recordedGuest = { ...guest };
+      recordedGuest.Adults = payload.checkinState.actualAdults;
+      recordedGuest.Children = payload.checkinState.actualChildren;
+      recordedGuest.Total = payload.checkinState.actualTotal;
+      showResult("approved", "Already checked in", "Showing the actual counts recorded for this event day.", recordedGuest);
+      return;
+    }
+    showResult("approved", "Approved — please confirm", "Review the expected guests below. Adjust only if the actual arrival count differs, then confirm.", guest, true);
   } catch (error) { showResult("rejected", "Connection problem", error.message || "Please try again."); }
 }
 
