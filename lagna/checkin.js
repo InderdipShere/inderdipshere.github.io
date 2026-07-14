@@ -4,7 +4,7 @@ const initialCheckinToken = extractToken(new URLSearchParams(window.location.sea
 const state = { pin: "", eventDay: "Day 1", stream: null, detector: null, qrReader: null, scanning: false, lastToken: "", pendingToken: initialCheckinToken };
 
 function extractToken(value) {
-  const match = String(value || "").toUpperCase().match(/CHK-[A-Z0-9-]+/);
+  const match = String(value || "").match(/CHK-[A-Z0-9-]+/i);
   return match ? match[0] : "";
 }
 
