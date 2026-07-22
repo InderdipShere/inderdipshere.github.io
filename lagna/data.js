@@ -216,8 +216,13 @@ function loadGuest() {
   currentGuest = guest || null;
   const requestForm = document.getElementById("generalInviteRequest");
   const rsvpForm = document.getElementById("rsvpForm");
-  if (requestForm) requestForm.hidden = !!guest || !!inviteToken;
-  if (rsvpForm) rsvpForm.hidden = !guest && !inviteToken;
+  const generalRsvpIntro = document.getElementById("generalRsvpIntro");
+  const privateRsvpIntro = document.getElementById("privateRsvpIntro");
+  const hasPrivateLink = !!inviteToken;
+  if (requestForm) requestForm.hidden = hasPrivateLink;
+  if (rsvpForm) rsvpForm.hidden = !hasPrivateLink;
+  if (generalRsvpIntro) generalRsvpIntro.hidden = hasPrivateLink;
+  if (privateRsvpIntro) privateRsvpIntro.hidden = !hasPrivateLink;
 
   if (guest) {
     const rsvpStatus = guest.rsvp || "Pending";

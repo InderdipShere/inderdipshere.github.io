@@ -240,8 +240,11 @@
 
     <section id="rsvp" class="section alt">
       <h2>RSVP</h2>
-      <p>
-        Submit or update your RSVP using the same invitation link. Adult and children counts are entered here by the guest.
+      <p id="generalRsvpIntro" hidden>
+        Request your personalized invitation link here. Once approved, your family can open the private page and submit RSVP.
+      </p>
+      <p id="privateRsvpIntro" hidden>
+        Confirm attendance for your family using this private invitation link. Your personalized invitation PDF will appear after RSVP is saved.
       </p>
       <form id="generalInviteRequest" class="form" hidden>
         <h3>Request your personalized invitation</h3>
@@ -259,7 +262,7 @@
         <button class="btn primary" type="submit">Request Personalized Invitation</button>
         <p id="requestInviteStatus" class="form-status" aria-live="polite"></p>
       </form>
-      <form id="rsvpForm" class="form">
+      <form id="rsvpForm" class="form" hidden>
         <label>Family Name <input id="rsvpFamilyName" type="text" placeholder="Example: Patil Family"></label>
         <label>Adults <input id="rsvpAdults" type="number" min="0" placeholder="0"></label>
         <label>Children <input id="rsvpChildren" type="number" min="0" placeholder="0"></label>
