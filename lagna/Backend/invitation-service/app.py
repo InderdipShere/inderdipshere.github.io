@@ -84,8 +84,9 @@ def build_invitation_response(invite_token, quality):
         raise HTTPException(status_code=409, detail="Check-in token is not generated yet")
 
     family_name = str(guest.get("Family Name", "")).strip() or "Guest"
+    side = str(guest.get("Side", "")).strip()
     total_guests = str(guest.get("Total", "")).strip() if attending else ""
-    cache_key = (quality, invite_token, checkin_token if attending else "no-qr", family_name, total_guests)
+    cache_key = (quality, invite_token, checkin_token if attending else "no-qr", family_name, total_guests, side)
     cached_pdf = get_cached_pdf(cache_key)
     if cached_pdf:
         pdf = cached_pdf
@@ -93,7 +94,7 @@ def build_invitation_response(invite_token, quality):
         checkin_url = f"{SITE_URL}/checkin.html?checkin={checkin_token}" if attending else ""
         pdf = set_cached_pdf(
             cache_key,
-            generate_invitation_pdf(checkin_url, family_name, total_guests, quality=quality),
+            generate_invitation_pdf(checkin_url, family_name, total_guests, quality=quality, side=side),
         )
     filename = f"Invitation_{quality}_{invite_token}.pdf"
 

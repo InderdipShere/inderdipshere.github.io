@@ -12,9 +12,11 @@ from reportlab.pdfgen import canvas
 BASE_DIR = Path(__file__).resolve().parent
 ASSET_DIR = BASE_DIR / "assets"
 FIXED_PDF = ASSET_DIR / "Invitation_fixed_optimized.pdf"
-TEMPLATE_PDF = ASSET_DIR / "Invitation_template_optimized.pdf"
+TEMPLATE_PDF = ASSET_DIR / "Invitation_template_groom_optimized.pdf"
+BRIDE_TEMPLATE_PDF = ASSET_DIR / "Invitation_template_bride_optimized.pdf"
 RICH_FIXED_PDF = ASSET_DIR / "Invitation_fixed.pdf"
-RICH_TEMPLATE_PDF = ASSET_DIR / "Invitation_template.pdf"
+RICH_TEMPLATE_PDF = ASSET_DIR / "Invitation_template_groom.pdf"
+RICH_BRIDE_TEMPLATE_PDF = ASSET_DIR / "Invitation_template_bride.pdf"
 MM = 72 / 25.4
 QR_BOX_SIZE = 34 * MM
 # Measured from the QR-free page-4 template. The changemargin environment
@@ -116,14 +118,19 @@ def build_overlay(qr_data, family_name, total_guests):
     return PdfReader(packet).pages[0]
 
 
-def get_pdf_assets(quality="quick"):
+def is_bride_side(side):
+    value = str(side or "").strip().lower()
+    return any(marker in value for marker in ("bride", "wankhede", "वधू", "वधुपक्ष"))
+
+
+def get_pdf_assets(quality="quick", side=""):
     if quality == "rich":
-        return RICH_FIXED_PDF, RICH_TEMPLATE_PDF
-    return FIXED_PDF, TEMPLATE_PDF
+        return RICH_FIXED_PDF, RICH_BRIDE_TEMPLATE_PDF if is_bride_side(side) else RICH_TEMPLATE_PDF
+    return FIXED_PDF, BRIDE_TEMPLATE_PDF if is_bride_side(side) else TEMPLATE_PDF
 
 
-def generate_invitation_pdf(checkin_url, family_name, total_guests, quality="quick"):
-    fixed_pdf, template_pdf = get_pdf_assets(quality)
+def generate_invitation_pdf(checkin_url, family_name, total_guests, quality="quick", side=""):
+    fixed_pdf, template_pdf = get_pdf_assets(quality, side)
     fixed_reader = PdfReader(str(fixed_pdf))
     template_reader = PdfReader(str(template_pdf))
     writer = PdfWriter()
