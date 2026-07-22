@@ -1,6 +1,5 @@
 const SENDER_API_URL = "https://script.google.com/macros/s/AKfycbzFTHa53ENMn0udXLJ1O7IqqgkxJ4cTEHNZFm8wkpu91gHT-s3Ud7uBzqfCW4qd_gPb/exec";
-// Replace this with the final Unlisted YouTube URL after the invitation film is uploaded.
-const INVITATION_VIDEO_URL = "https://www.youtube.com/watch?v=YOUR_UNLISTED_WEDDING_FILM";
+const INVITATION_VIDEO_URL = "https://www.youtube.com/watch?v=Py2J0UfHAEI";
 const SENDER_STORAGE_KEY = "lagna-invitation-sender";
 const IS_LOCAL_PREVIEW = ["127.0.0.1", "localhost"].includes(window.location.hostname)
   && new URLSearchParams(window.location.search).has("preview");
@@ -156,6 +155,30 @@ function buildMessage(guest, templateName = "pranam") {
       englishFamilyNote,
       "",
       "With love and folded hands, 🙏",
+      "Deepali, Inderdip & family"
+    ],
+    plain: [
+      `नमस्कार ${marathiFamilyGreeting},`,
+      "",
+      `${coupleNamesMarathi} यांच्या विवाह सोहळ्यास आपणास आणि आपल्या परिवारास मनापासून आमंत्रण.`,
+      marathiFamilyNote,
+      "आमचा आमंत्रण व्हिडिओ पाहा आणि खालील वैयक्तिक दुव्यावरून कार्यक्रमाची संपूर्ण माहिती पाहून RSVP करा:",
+      "",
+      link,
+      "",
+      "आपण या आनंदाच्या क्षणी सहभागी झालात तर आम्हाला खूप आनंद होईल.",
+      "",
+      `Hello ${englishFamilyGreeting},`,
+      "",
+      `We warmly invite you and your family to the wedding celebration of ${coupleNamesEnglish}.`,
+      englishFamilyNote,
+      "Please watch our invitation video, then open your personal invitation link below to view the full details and RSVP:",
+      "",
+      link,
+      "",
+      "It would make us very happy to have you with us for this special occasion.",
+      "",
+      "With love,",
       "Deepali, Inderdip & family"
     ]
   };
