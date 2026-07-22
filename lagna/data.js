@@ -11,7 +11,7 @@ let scheduleDocuments = [];
 let ceremonies = [];
 let currentGuest = null;
 
-const WEDDING_DATE = new Date("2026-08-03T11:00:00+05:30");
+const WEDDING_DATE = new Date("2026-08-03T08:00:00+05:30");
 
 function getInviteToken() {
   const params = new URLSearchParams(window.location.search);
@@ -682,6 +682,15 @@ function loadDefaultEventData() {
       description: "Turmeric is applied as a symbol of brightness, protection, purification, and loving wishes from both families.",
       note: "Guest moment: offer haldi gently and share blessings for health and happiness.",
       reference: "Cultural reference: Maharashtrian halad ceremony and auspicious turmeric rituals."
+    },
+    {
+      english: "Haldi Removal / Nanora",
+      marathi: "हळद उतरवणे / न्हाणोरा",
+      symbol: "N",
+      theme: "haldi",
+      description: "After the joyful haldi blessings, the ceremonial cleansing marks a gentle transition from playful preparation into the sacred wedding day. In Maharashtrian homes, this bathing tradition symbolically refreshes the bride and groom, carrying forward family affection, purity, and readiness for the wedding rituals ahead.",
+      note: "Guest moment: witness this as a tender family rite where the brightness of haldi becomes calm preparation for the marriage ceremony.",
+      reference: "Cultural reference: Maharashtrian halad utaravane and nhanora traditions connected with auspicious cleansing before wedding rites."
     },
     {
       english: "Buddhist Wedding",
