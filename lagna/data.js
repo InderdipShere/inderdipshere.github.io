@@ -218,7 +218,13 @@ function loadGuest() {
   const rsvpForm = document.getElementById("rsvpForm");
   const generalRsvpIntro = document.getElementById("generalRsvpIntro");
   const privateRsvpIntro = document.getElementById("privateRsvpIntro");
+  const rsvpSection = document.getElementById("rsvp");
   const hasPrivateLink = !!inviteToken;
+  if (rsvpSection) {
+    rsvpSection.classList.toggle("rsvp-mode-private", hasPrivateLink);
+    rsvpSection.classList.toggle("rsvp-mode-general", !hasPrivateLink);
+    rsvpSection.classList.remove("rsvp-mode-pending");
+  }
   if (requestForm) requestForm.hidden = hasPrivateLink;
   if (rsvpForm) rsvpForm.hidden = !hasPrivateLink;
   if (generalRsvpIntro) generalRsvpIntro.hidden = hasPrivateLink;

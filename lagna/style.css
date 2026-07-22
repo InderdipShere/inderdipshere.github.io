@@ -1,5 +1,15 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
+.rsvp-mode-private #generalRsvpIntro,
+.rsvp-mode-private #generalInviteRequest,
+.rsvp-mode-general #privateRsvpIntro,
+.rsvp-mode-general #rsvpForm,
+.rsvp-mode-pending #generalRsvpIntro,
+.rsvp-mode-pending #privateRsvpIntro,
+.rsvp-mode-pending #generalInviteRequest,
+.rsvp-mode-pending #rsvpForm {
+  display: none !important;
+}
 body {
   margin: 0;
   font-family: Georgia, 'Times New Roman', serif;
