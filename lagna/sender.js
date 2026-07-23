@@ -40,6 +40,18 @@ function buildMessage(guest, templateName = "pranam") {
   const englishFamilyGreeting = `${greetingName} ji, respected elders and every member of ${englishFamilyName}`;
   const marathiFamilyNote = `हा स्नेहपूर्ण संदेश ${familyName} परिवारातील सर्व मान्यवर ज्येष्ठ, प्रियजन आणि प्रत्येक सदस्यासाठी आहे. 🌸`;
   const englishFamilyNote = `This heartfelt invitation is for the respected elders, loved ones and every member of ${englishFamilyName}. 🌸`;
+  const rsvpPdfNotice = [
+    "",
+    "━━━━━━━━━━━━━━━━━━━━",
+    "महत्त्वाची सूचना:",
+    "हा दुवा अंतिम निमंत्रण PDF नाही.",
+    "कृपया वेबसाइटवर RSVP पूर्ण करा. RSVP झाल्यानंतरच आपले वैयक्तिक निमंत्रण PDF तयार होईल.",
+    "",
+    "IMPORTANT NOTE:",
+    "This link is not the final invitation PDF.",
+    "Please complete RSVP on the website. Your personalized invitation PDF will be generated only after RSVP is submitted.",
+    "━━━━━━━━━━━━━━━━━━━━"
+  ].join("\n");
 
   const messages = {
     ready: [
@@ -193,7 +205,8 @@ function buildMessage(guest, templateName = "pranam") {
     "🎬 विवाह-आमंत्रण चित्रपट | Wedding Invitation Film",
     videoLink,
     "",
-    selectedMessage
+    selectedMessage,
+    rsvpPdfNotice
   ].join("\n");
 }
 
