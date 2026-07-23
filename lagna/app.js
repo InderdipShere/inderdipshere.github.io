@@ -7,17 +7,17 @@ const companionTopics = [
   {
     keywords: ["rsvp", "update", "coming", "attend", "attendance", "adult", "child", "children", "special request"],
     answer:
-      "You can submit or update your RSVP from the RSVP section using the same invitation link. Enter how many adults and children from your family will attend, choose Yes or No, and add any special request. If there is no request, Nil is fine."
+      "To receive your invitation card, open your personal website link, go to the RSVP section, enter your family details, choose Yes or No, and submit. After RSVP is saved, your personalized invitation card will appear on the website."
   },
   {
-    keywords: ["qr", "pass", "entry", "gate", "check in", "check-in", "scan"],
+    keywords: ["qr", "pass", "entry", "gate", "check in", "check-in", "scan", "venue entry"],
     answer:
-      "The QR entry pass becomes active only after an attending RSVP is submitted. It represents the whole family and will show the RSVP count. If you are not attending, your invitation PDF remains available without the QR code."
+      "The invitation card is necessary for entry to the venue. If you RSVP Yes, the card will include a QR entry code for your family. Please keep the invitation card ready on your phone when you come to the venue."
   },
   {
     keywords: ["not coming", "cannot come", "not attend", "no rsvp", "decline"],
     answer:
-      "If you cannot attend in person, please still submit the RSVP as not attending. You will still receive the invitation PDF, key event schedule, and livestream link, but no QR entry code will be generated."
+      "If you cannot attend in person, please still submit the RSVP as not attending. You will receive the invitation card with schedule and livestream details, but no venue-entry QR code will be generated."
   },
   {
     keywords: ["live", "livestream", "youtube", "stream", "online", "watch", "remote"],
@@ -27,7 +27,7 @@ const companionTopics = [
   {
     keywords: ["schedule", "time", "day 1", "day 2", "sangeet", "haldi", "buddhist", "vedic", "reception", "lunch", "program", "event"],
     answer:
-      "The schedule is divided into key event groups: Day 1 includes Sangeet, Haldi, Stories of Us, and Dinner. Day 2 includes Haldi Removal, Buddhist Wedding, Vedic Wedding, Reception, Lunch, and Farewell. The official Day 1 and Day 2 PDF schedules will be linked on the site."
+      "The main wedding ceremony is on 3 August 2026 at 8:00 AM IST. The venue is 7 Vachann Banquet Hall, Nagpur. The invitation card also contains the venue, time, and full schedule."
   },
   {
     keywords: ["ceremony", "ritual", "meaning", "marathi", "sanskrit", "shlok", "mantra", "guide", "antarpat", "mangalashtak", "saptapadi", "phere", "buddha", "buddhist"],
@@ -50,28 +50,28 @@ const companionTopics = [
       "This wedding is dedicated to Shri Pradipkumar Shere in loving memory. The section honours his life, values, dates, and family presence through a photo strip and tribute text. The wedding remains a joyful ceremony for Deepali and Inderdip, carried with his blessings."
   },
   {
-    keywords: ["invite", "invitation", "pdf", "token", "family", "personal", "private", "link"],
+    keywords: ["invite", "invitation", "card", "download", "pdf", "token", "family", "personal", "private", "link"],
     answer:
-      "Each family receives a personalized invitation link using a private invite token. The website uses that token to show the family welcome message and invitation details. A general invite link can show the default message."
+      "The WhatsApp link opens your personal wedding website, not the final invitation card. To download the invitation card: open the website link, go to RSVP, fill your family details, submit RSVP, and then open the invitation card shown below the form. The card has the venue, time, schedule, and QR entry code when attending."
   },
   {
     keywords: ["date", "countdown", "august", "3 august", "3rd august", "wedding day"],
     answer:
-      "The countdown is set for 3 August 2026 at 11:00 AM IST. Before the wedding it counts down to the ceremony; after that moment it changes into a count-up showing how much time has passed since the wedding began."
+      "The countdown is set for 3 August 2026 at 8:00 AM IST. Before the wedding it counts down to the ceremony; after that moment it changes into a positive count-up showing how much time has passed since the wedding began."
   }
 ];
 
 const quickPrompts = [
   "How do I update RSVP?",
-  "When is the QR pass active?",
+  "How do I download the invitation card?",
+  "Is the invitation card needed for entry?",
   "How do I share blessings?",
-  "Tell me about the dedication"
 ];
 
 const companionFallbacks = [
-  "I can help with RSVP, QR entry pass, livestream, schedule, ceremony meanings, uploads, written blessings, invite links, and the dedication to Shri Pradipkumar Shere.",
-  "Try asking: How do I RSVP? Where do I upload photos? How do I write blessings? What happens on Day 2? Why is the wedding dedicated to Shri Pradipkumar Shere?",
-  "I may not know every detail yet, but I can guide guests through the main website sections: invitation, RSVP, schedule, ceremony guide, memories, livestream, and dedication."
+  "I can help with RSVP, downloading the invitation card, QR venue entry, livestream, schedule, venue, uploads, written blessings, and the dedication to Shri Pradipkumar Shere.",
+  "Try asking: How do I download the invitation card? Is the card needed for venue entry? Where is the venue? How do I RSVP?",
+  "I may not know every detail yet, but I can guide guests through the main website sections: RSVP, invitation card, schedule, ceremony guide, memories, livestream, and dedication."
 ];
 
 function normalizeQuestion(text) {
@@ -164,7 +164,7 @@ function loadCompanionPrompts() {
   });
 
   chatLog.appendChild(promptRow);
-  addChatMessage("assistant", "Namaskar. I can help with RSVP, QR entry pass, livestream, schedule, ceremony guide, uploads, written blessings, and the dedication to Shri Pradipkumar Shere.");
+  addChatMessage("assistant", "Namaskar. I can help with RSVP, downloading the invitation card, QR venue entry, livestream, schedule, venue, uploads, written blessings, and the dedication to Shri Pradipkumar Shere.");
 
   input.addEventListener("keydown", event => {
     if (event.key === "Enter") {

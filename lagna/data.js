@@ -108,7 +108,7 @@ function buildGuestInfo(guest, rsvpStatus) {
   if (canOpenInvitationPdf(guest)) {
     const invitationUrl = getInvitationPdfUrl(guest);
     if (invitationUrl) {
-      rows.push(`<a class="guest-card-link" href="${escapeHtml(invitationUrl)}" target="_blank" rel="noopener">View Invitation PDF</a>`);
+      rows.push(`<a class="guest-card-link" href="${escapeHtml(invitationUrl)}" target="_blank" rel="noopener">View Invitation Card</a>`);
     }
   }
 
@@ -150,17 +150,17 @@ function renderInvitationDownloadPanel(guest, statusMessage = "") {
   panel.innerHTML = `
     <div class="download-card quick">
       <div>
-        <strong>Invitation PDF is ready</strong>
-        <p>${escapeHtml(statusMessage || (isRsvpConfirmed(guest) ? "Your personalized QR invitation opens as a quick, optimized PDF." : "Your invitation and livestream details open as a quick, optimized PDF without venue QR code."))}</p>
+        <strong>Invitation card is ready</strong>
+        <p>${escapeHtml(statusMessage || (isRsvpConfirmed(guest) ? "Your personalized QR invitation card opens as a quick, optimized file." : "Your invitation card and livestream details open as a quick, optimized file without venue QR code."))}</p>
       </div>
-      <a class="btn primary" href="${escapeHtml(invitationUrl)}" target="_blank" rel="noopener">Open Quick PDF</a>
+      <a class="btn primary" href="${escapeHtml(invitationUrl)}" target="_blank" rel="noopener">Open Invitation Card</a>
     </div>
     <div class="download-card rich">
       <div>
-        <strong>Rich quality PDF</strong>
+        <strong>Rich quality invitation card</strong>
         <p>Large artistic version, around 20 MB. It may take about two minutes to open or download.</p>
       </div>
-      <a class="btn secondary rich-download" href="${escapeHtml(richInvitationUrl)}" target="_blank" rel="noopener">Open Rich PDF</a>
+      <a class="btn secondary rich-download" href="${escapeHtml(richInvitationUrl)}" target="_blank" rel="noopener">Open Rich Card</a>
     </div>
   `;
 }
@@ -483,11 +483,11 @@ async function submitRsvp(event) {
 
     if (status) {
       status.textContent = payload.rsvp === "Yes"
-        ? "RSVP confirmed. Your personalized invitation PDF is ready below."
-        : "RSVP updated. Your invitation PDF and livestream details are ready below.";
+        ? "RSVP confirmed. Your personalized invitation card is ready below."
+        : "RSVP updated. Your invitation card and livestream details are ready below.";
     }
     if (payload.rsvp === "Yes") {
-      renderInvitationDownloadPanel(currentGuest, "Your QR entry code is included on page 4. Open or download the PDF before coming to the venue.");
+      renderInvitationDownloadPanel(currentGuest, "Your QR entry code is included on page 4. Please open or download the invitation card before coming to the venue.");
     } else {
       renderInvitationDownloadPanel(currentGuest, "Your invitation and livestream details are available below. Because you are not attending in person, the venue QR area is left blank.");
     }
@@ -518,7 +518,7 @@ function updateInviteStatus(rsvpStatus, qrGenerated) {
     message = "RSVP confirmed. Your QR entry pass will appear after it is generated.";
     className = "status-banner active";
   } else if (normalizedStatus === "no" || normalizedStatus === "issue") {
-    message = "RSVP marked as not attending. Invitation PDF and livestream link remain available without QR entry code.";
+    message = "RSVP marked as not attending. Invitation card and livestream link remain available without QR entry code.";
     className = "status-banner inactive";
   } else if (normalizedStatus === "general") {
     message = "General invitation. Open your private family link to activate personalized RSVP and QR pass details.";
